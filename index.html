@@ -233,7 +233,7 @@ var SEC_LABELS = {
   "acc":  "Global Vision Accessories"
 };
 
-var curFilter = "all";
+var activeFilters = [];
 var curSort = "cat";
 var curSearch = "";
 var netVisible = true;
@@ -306,23 +306,65 @@ function pageUrl(cat, slug) {
   if (cat === "acc") return BACC + slug;
   return BASE + slug;
 }
+function hasFilter(f) {
+  for (var i = 0; i < activeFilters.length; i++) { if (activeFilters[i] === f) return true; }
+  return false;
+}
 function matches(l) {
   var c = l[1], line = l[3], type = l[4];
   var isMirrorless = (c === "mff" || c === "mis" || c === "mapc");
   var isDSLR = (c === "dff" || c === "dapc");
   var isFF   = (c === "mff" || c === "mis" || c === "dff");
   var isAPSC = (c === "mapc" || c === "dapc");
-  if (curFilter === "mirrorless"   && !isMirrorless) return false;
-  if (curFilter === "dslr"         && !isDSLR)       return false;
-  if (curFilter === "ff"           && !isFF)          return false;
-  if (curFilter === "apsc"         && !isAPSC)        return false;
-  if (curFilter === "Art"          && line !== "Art") return false;
-  if (curFilter === "Contemporary" && line !== "Contemporary") return false;
-  if (curFilter === "Sports"       && line !== "Sports")       return false;
-  if (curFilter === "prime"        && type !== "prime")  return false;
-  if (curFilter === "zoom"         && type !== "zoom")   return false;
-  if (curFilter === "cameras"      && c !== "cam")       return false;
-  if (curFilter === "accessories"  && c !== "acc")       return false;
+  if (activeFilters.length === 0) {
+    // no filters = show all
+  } else {
+    // category group: mirrorless/dslr/ff/apsc/cameras/accessories
+    var catFilters = [];
+    var catGroups = ["mirrorless","dslr","ff","apsc","cameras","accessories"];
+    for (var ci = 0; ci < catGroups.length; ci++) {
+      if (hasFilter(catGroups[ci])) catFilters.push(catGroups[ci]);
+    }
+    if (catFilters.length > 0) {
+      var catPass = false;
+      for (var ci2 = 0; ci2 < catFilters.length; ci2++) {
+        var f = catFilters[ci2];
+        if (f === "mirrorless" && isMirrorless) catPass = true;
+        if (f === "dslr"       && isDSLR)       catPass = true;
+        if (f === "ff"         && isFF)          catPass = true;
+        if (f === "apsc"       && isAPSC)        catPass = true;
+        if (f === "cameras"    && c === "cam")   catPass = true;
+        if (f === "accessories"&& c === "acc")   catPass = true;
+      }
+      if (!catPass) return false;
+    }
+    // line filters: Art/Contemporary/Sports
+    var lineFilters = [];
+    var lineGroups = ["Art","Contemporary","Sports"];
+    for (var li = 0; li < lineGroups.length; li++) {
+      if (hasFilter(lineGroups[li])) lineFilters.push(lineGroups[li]);
+    }
+    if (lineFilters.length > 0) {
+      var linePass = false;
+      for (var li2 = 0; li2 < lineFilters.length; li2++) {
+        if (line === lineFilters[li2]) linePass = true;
+      }
+      if (!linePass) return false;
+    }
+    // type filters: prime/zoom
+    var typeFilters = [];
+    var typeGroups = ["prime","zoom"];
+    for (var ti = 0; ti < typeGroups.length; ti++) {
+      if (hasFilter(typeGroups[ti])) typeFilters.push(typeGroups[ti]);
+    }
+    if (typeFilters.length > 0) {
+      var typePass = false;
+      for (var ti2 = 0; ti2 < typeFilters.length; ti2++) {
+        if (type === typeFilters[ti2]) typePass = true;
+      }
+      if (!typePass) return false;
+    }
+  }
   if (curSearch) {
     var hay = (l[0] + " " + l[1] + " " + l[2] + " " + l[3] + " " + l[4] + " " + l[9] + " " + l[14]).toLowerCase();
     if (hay.indexOf(curSearch) < 0) return false;
@@ -351,7 +393,7 @@ function render(data) {
   var prices = [];
   for (var i = 0; i < data.length; i++) {
     var l = data[i];
-    if (curFilter === "all" && l[1] !== lastCat) {
+    if (activeFilters.length === 0 && l[1] !== lastCat) {
       lastCat = l[1];
       rows += '<tr class="sec-hdr"><td colspan="13">' + SEC_LABELS[l[1]] + '</td></tr>';
     }
@@ -416,11 +458,34 @@ window.onload = function() {
     (function(btn) {
       btn.addEventListener("click", function() {
         if (btn.id === "net-toggle") return;
-        for (var k = 0; k < btns.length; k++) {
-          if (btns[k].id !== "net-toggle") btns[k].className = "filter-btn";
+        var f = btn.getAttribute("data-f");
+        if (f === "all") {
+          activeFilters = [];
+          for (var k = 0; k < btns.length; k++) {
+            if (btns[k].id !== "net-toggle") btns[k].className = "filter-btn";
+          }
+          document.querySelector(".filter-btn[data-f=all]").className = "filter-btn active";
+        } else {
+          // Toggle this filter on/off
+          var idx = -1;
+          for (var k = 0; k < activeFilters.length; k++) {
+            if (activeFilters[k] === f) { idx = k; break; }
+          }
+          if (idx >= 0) {
+            activeFilters.splice(idx, 1);
+            btn.className = "filter-btn";
+          } else {
+            activeFilters.push(f);
+            btn.className = "filter-btn active";
+          }
+          // Update "All" button - active only when nothing selected
+          var allBtn = document.querySelector(".filter-btn[data-f=all]");
+          if (activeFilters.length === 0) {
+            allBtn.className = "filter-btn active";
+          } else {
+            allBtn.className = "filter-btn";
+          }
         }
-        btn.className = "filter-btn active";
-        curFilter = btn.getAttribute("data-f");
         render(getFiltered());
       });
     })(btns[bi]);
