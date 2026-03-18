@@ -135,6 +135,7 @@ table.hide-net td:nth-child(6) { display: none; }
   <span><span class="leg-dot" style="background:#105050"></span>Accessory</span>
 </div>
 <script>
+
 var BASE = "https://www.sigma-global.com/en/lenses/";
 var BCAM = "https://www.sigma-global.com/en/cameras/";
 var BACC = "https://www.sigma-global.com/en/accessories/";
@@ -306,71 +307,46 @@ function pageUrl(cat, slug) {
   if (cat === "acc") return BACC + slug;
   return BASE + slug;
 }
-function hasFilter(f) {
-  for (var i = 0; i < activeFilters.length; i++) { if (activeFilters[i] === f) return true; }
-  return false;
-}
+
+// ---- FILTER STATE ----
+// Three independent slots - one selection per group (or empty = no constraint)
+// Group A: format/category  (mirrorless, dslr, ff, apsc, cameras, accessories)
+// Group B: line             (Art, Contemporary, Sports)
+// Group C: type             (prime, zoom)
+var filterA = "";
+var filterB = "";
+var filterC = "";
+var curSort = "cat";
+var curSearch = "";
+
 function matches(l) {
   var c = l[1], line = l[3], type = l[4];
   var isMirrorless = (c === "mff" || c === "mis" || c === "mapc");
-  var isDSLR = (c === "dff" || c === "dapc");
-  var isFF   = (c === "mff" || c === "mis" || c === "dff");
-  var isAPSC = (c === "mapc" || c === "dapc");
-  if (activeFilters.length === 0) {
-    // no filters = show all
-  } else {
-    // category group: mirrorless/dslr/ff/apsc/cameras/accessories
-    var catFilters = [];
-    var catGroups = ["mirrorless","dslr","ff","apsc","cameras","accessories"];
-    for (var ci = 0; ci < catGroups.length; ci++) {
-      if (hasFilter(catGroups[ci])) catFilters.push(catGroups[ci]);
-    }
-    if (catFilters.length > 0) {
-      var catPass = false;
-      for (var ci2 = 0; ci2 < catFilters.length; ci2++) {
-        var f = catFilters[ci2];
-        if (f === "mirrorless" && isMirrorless) catPass = true;
-        if (f === "dslr"       && isDSLR)       catPass = true;
-        if (f === "ff"         && isFF)          catPass = true;
-        if (f === "apsc"       && isAPSC)        catPass = true;
-        if (f === "cameras"    && c === "cam")   catPass = true;
-        if (f === "accessories"&& c === "acc")   catPass = true;
-      }
-      if (!catPass) return false;
-    }
-    // line filters: Art/Contemporary/Sports
-    var lineFilters = [];
-    var lineGroups = ["Art","Contemporary","Sports"];
-    for (var li = 0; li < lineGroups.length; li++) {
-      if (hasFilter(lineGroups[li])) lineFilters.push(lineGroups[li]);
-    }
-    if (lineFilters.length > 0) {
-      var linePass = false;
-      for (var li2 = 0; li2 < lineFilters.length; li2++) {
-        if (line === lineFilters[li2]) linePass = true;
-      }
-      if (!linePass) return false;
-    }
-    // type filters: prime/zoom
-    var typeFilters = [];
-    var typeGroups = ["prime","zoom"];
-    for (var ti = 0; ti < typeGroups.length; ti++) {
-      if (hasFilter(typeGroups[ti])) typeFilters.push(typeGroups[ti]);
-    }
-    if (typeFilters.length > 0) {
-      var typePass = false;
-      for (var ti2 = 0; ti2 < typeFilters.length; ti2++) {
-        if (type === typeFilters[ti2]) typePass = true;
-      }
-      if (!typePass) return false;
-    }
-  }
+  var isDSLR       = (c === "dff" || c === "dapc");
+  var isFF         = (c === "mff" || c === "mis" || c === "dff");
+  var isAPSC       = (c === "mapc" || c === "dapc");
+
+  if (filterA === "mirrorless"   && !isMirrorless)  return false;
+  if (filterA === "dslr"         && !isDSLR)         return false;
+  if (filterA === "ff"           && !isFF)            return false;
+  if (filterA === "apsc"         && !isAPSC)          return false;
+  if (filterA === "cameras"      && c !== "cam")      return false;
+  if (filterA === "accessories"  && c !== "acc")      return false;
+
+  if (filterB === "Art"          && line !== "Art")          return false;
+  if (filterB === "Contemporary" && line !== "Contemporary") return false;
+  if (filterB === "Sports"       && line !== "Sports")       return false;
+
+  if (filterC === "prime"        && type !== "prime") return false;
+  if (filterC === "zoom"         && type !== "zoom")  return false;
+
   if (curSearch) {
-    var hay = (l[0] + " " + l[1] + " " + l[2] + " " + l[3] + " " + l[4] + " " + l[9] + " " + l[14]).toLowerCase();
+    var hay = (l[0]+" "+l[1]+" "+l[2]+" "+l[3]+" "+l[4]+" "+l[9]+" "+l[14]).toLowerCase();
     if (hay.indexOf(curSearch) < 0) return false;
   }
   return true;
 }
+
 function getFiltered() {
   var out = [];
   for (var i = 0; i < L.length; i++) {
@@ -387,13 +363,14 @@ function getFiltered() {
   });
   return out;
 }
+
 function render(data) {
   var rows = "";
   var lastCat = "";
   var prices = [];
   for (var i = 0; i < data.length; i++) {
     var l = data[i];
-    if (activeFilters.length === 0 && l[1] !== lastCat) {
+    if (filterA === "" && filterB === "" && filterC === "" && l[1] !== lastCat) {
       lastCat = l[1];
       rows += '<tr class="sec-hdr"><td colspan="13">' + SEC_LABELS[l[1]] + '</td></tr>';
     }
@@ -452,6 +429,35 @@ function render(data) {
   document.getElementById("cnt").textContent = data.length + " items";
 }
 
+
+// Group definitions - which data-f value belongs to which group
+function groupOf(f) {
+  var A = ["mirrorless","dslr","ff","apsc","cameras","accessories"];
+  var B = ["Art","Contemporary","Sports"];
+  var C = ["prime","zoom"];
+  for (var i = 0; i < A.length; i++) { if (A[i] === f) return "A"; }
+  for (var i = 0; i < B.length; i++) { if (B[i] === f) return "B"; }
+  for (var i = 0; i < C.length; i++) { if (C[i] === f) return "C"; }
+  return "";
+}
+
+function updateButtonStates() {
+  var btns = document.querySelectorAll(".filter-btn");
+  for (var k = 0; k < btns.length; k++) {
+    if (btns[k].id === "net-toggle") continue;
+    var f = btns[k].getAttribute("data-f");
+    if (f === "all") {
+      btns[k].className = (filterA === "" && filterB === "" && filterC === "") ? "filter-btn active" : "filter-btn";
+    } else {
+      var g = groupOf(f);
+      var active = (g === "A" && filterA === f) || (g === "B" && filterB === f) || (g === "C" && filterC === f);
+      btns[k].className = active ? "filter-btn active" : "filter-btn";
+    }
+  }
+}
+
+var netVisible = true;
+
 window.onload = function() {
   var btns = document.querySelectorAll(".filter-btn");
   for (var bi = 0; bi < btns.length; bi++) {
@@ -460,65 +466,53 @@ window.onload = function() {
         if (btn.id === "net-toggle") return;
         var f = btn.getAttribute("data-f");
         if (f === "all") {
-          activeFilters = [];
-          for (var k = 0; k < btns.length; k++) {
-            if (btns[k].id !== "net-toggle") btns[k].className = "filter-btn";
-          }
-          document.querySelector(".filter-btn[data-f=all]").className = "filter-btn active";
+          filterA = ""; filterB = ""; filterC = "";
         } else {
-          // Toggle this filter on/off
-          var idx = -1;
-          for (var k = 0; k < activeFilters.length; k++) {
-            if (activeFilters[k] === f) { idx = k; break; }
-          }
-          if (idx >= 0) {
-            activeFilters.splice(idx, 1);
-            btn.className = "filter-btn";
-          } else {
-            activeFilters.push(f);
-            btn.className = "filter-btn active";
-          }
-          // Update "All" button - active only when nothing selected
-          var allBtn = document.querySelector(".filter-btn[data-f=all]");
-          if (activeFilters.length === 0) {
-            allBtn.className = "filter-btn active";
-          } else {
-            allBtn.className = "filter-btn";
-          }
+          var g = groupOf(f);
+          // Toggle: clicking active filter in a group clears it, else sets it
+          if (g === "A") { filterA = (filterA === f) ? "" : f; }
+          if (g === "B") { filterB = (filterB === f) ? "" : f; }
+          if (g === "C") { filterC = (filterC === f) ? "" : f; }
         }
+        updateButtonStates();
         render(getFiltered());
       });
     })(btns[bi]);
   }
+
   document.getElementById("sort-sel").addEventListener("change", function() {
     curSort = this.value;
     render(getFiltered());
   });
+
   document.getElementById("search").addEventListener("input", function() {
     curSearch = this.value.toLowerCase();
     render(getFiltered());
   });
+
   document.getElementById("net-toggle").addEventListener("click", function() {
     netVisible = !netVisible;
     var btn = document.getElementById("net-toggle");
     var tbl = document.querySelector("table");
-    var th = document.getElementById("th-net");
+    var th  = document.getElementById("th-net");
     if (netVisible) {
       if (tbl) tbl.className = "";
-      if (th) th.style.display = "";
+      if (th)  th.style.display = "";
       btn.textContent = "Hide Dealer Net";
       btn.style.background = "#2a1010";
       btn.style.borderColor = "#5a2020";
       btn.style.color = "#e06060";
     } else {
       if (tbl) tbl.className = "hide-net";
-      if (th) th.style.display = "none";
+      if (th)  th.style.display = "none";
       btn.textContent = "Show Dealer Net";
       btn.style.background = "#102a10";
       btn.style.borderColor = "#205a20";
       btn.style.color = "#60c060";
     }
   });
+
+  updateButtonStates();
   render(getFiltered());
 };
 </script>
