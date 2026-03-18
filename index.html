@@ -51,7 +51,10 @@ td { padding: 6px 10px; vertical-align: middle; white-space: nowrap; }
 .b-spo { display:inline-block; font-size:9px; font-weight:600; padding:2px 5px; border-radius:3px; background:#1a2210; color:#6ec26a; border:1px solid #2e5028; }
 .b-other { display:inline-block; font-size:9px; font-weight:600; padding:2px 5px; border-radius:3px; background:#1a1a10; color:#d4c460; border:1px solid #504a10; }
 .map-price { color: #e0e4eb; font-variant-numeric: tabular-nums; font-weight: 500; }
-.map-hi { color: #c9a840; }
+.map-rebate { color: #e07040; font-variant-numeric: tabular-nums; font-weight: 600; cursor: pointer; position: relative; }
+.map-rebate:after { content: attr(data-tip); display: none; position: absolute; left: 0; top: 120%; background: #1a2810; color: #80d860; border: 1px solid #2e5028; border-radius: 5px; padding: 4px 8px; font-size: 10px; white-space: nowrap; z-index: 99; font-weight: 500; }
+.map-rebate:hover:after { display: block; }
+.map-rebate.tip-open:after { display: block; }
 .net-price { color: #6ec26a; font-variant-numeric: tabular-nums; }
 .mounts { color: #9ba3af; font-size: 10px; }
 .acc-cell { color: #6b7280; font-size: 10px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
@@ -125,6 +128,7 @@ table.hide-net td:nth-child(6) { display: none; }
 <tbody id="tbody"></tbody>
 </table>
 </div>
+<div style="font-size:10px;color:#e07040;margin-top:8px;">* Instant savings program active March 2 - March 29, 2026. Hover or tap price for details.</div>
 <div class="legend">
   <span><span class="leg-dot" style="background:#1a2550"></span>M FF (DG DN)</span>
   <span><span class="leg-dot" style="background:#2a1a50"></span>I-series</span>
@@ -139,6 +143,16 @@ table.hide-net td:nth-child(6) { display: none; }
 var BASE = "https://www.sigma-global.com/en/lenses/";
 var BCAM = "https://www.sigma-global.com/en/cameras/";
 var BACC = "https://www.sigma-global.com/en/accessories/";
+// Rebates: code -> {save, now, expires}
+var REBATES = {
+  "612": {save:75,  now:1414, expires:"Mar 29, 2026"},
+  "592": {save:100, now:889,  expires:"Mar 29, 2026"},
+  "750": {save:50,  now:999,  expires:"Mar 29, 2026"},
+  "747": {save:100, now:1549, expires:"Mar 29, 2026"},
+  "207": {save:50,  now:679,  expires:"Mar 29, 2026"},
+  "416": {save:50,  now:579,  expires:"Mar 29, 2026"},
+  "887": {save:75,  now:694,  expires:"Mar 29, 2026"}
+};
 
 var L = [
 ["213","mff","14-24mm F2.8 DG DN","Art","zoom",14,24,1299,1299,"Sony E, L","Gel","HLA",0,"Cover Cap, Case","no-front-filter","a019_14_24_28/"],
@@ -375,7 +389,7 @@ function render(data) {
       rows += '<tr class="sec-hdr"><td colspan="13">' + SEC_LABELS[l[1]] + '</td></tr>';
     }
     prices.push(l[7]);
-    var mapCls = l[7] >= 2000 ? "map-price map-hi" : "map-price";
+    var mapCls = "map-price";
     var filterCls = (parseInt(l[10]) >= 95) ? "flt flt-lg" : "flt";
     var osStr = l[12] ? '<span class="os-y">Y</span>' : '<span class="os-n">-</span>';
     var href = pageUrl(l[1], l[15]);
@@ -387,12 +401,20 @@ function render(data) {
     var nt = noteTags(l[14]);
     var map = "$" + l[7].toLocaleString();
     var net = "$" + l[8].toLocaleString();
+    var rebate = REBATES[l[0]];
+    var mapCell;
+    if (rebate) {
+      var tip = "Save $" + rebate.save + " -- Now $" + rebate.now + " (thru " + rebate.expires + ")";
+      mapCell = '<td class="map-rebate" data-tip="' + tip + '" onclick="toggleTip(this)">' + map + ' *</td>';
+    } else {
+      mapCell = '<td class="' + mapCls + '">' + map + '</td>';
+    }
     rows += '<tr class="' + rc + '">';
     rows += '<td class="code-cell">' + l[0] + '</td>';
     rows += '<td><span class="' + cc + '">' + cl + '</span></td>';
     rows += '<td class="ln">' + l[2] + '</td>';
     rows += '<td>' + lb + '</td>';
-    rows += '<td class="' + mapCls + '">' + map + '</td>';
+    rows += mapCell;
     rows += '<td class="net-price">' + net + '</td>';
     rows += '<td class="mounts">' + l[9] + '</td>';
     rows += '<td class="' + filterCls + '">' + l[10] + '</td>';
@@ -457,6 +479,10 @@ function updateButtonStates() {
 }
 
 var netVisible = true;
+
+function toggleTip(el) {
+  el.className = (el.className.indexOf("tip-open") >= 0) ? "map-rebate" : "map-rebate tip-open";
+}
 
 window.onload = function() {
   var btns = document.querySelectorAll(".filter-btn");
