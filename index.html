@@ -20,6 +20,8 @@ h1 { font-size: 18px; font-weight: 600; color: #f0f3f7; margin-bottom: 2px; }
 .filter-row { display: flex; flex-wrap: wrap; gap: 5px; }
 .filter-btn { background: #1a1d22; border: 1px solid #2a2f38; border-radius: 6px; color: #9ba3af; padding: 5px 10px; font-size: 11px; cursor: pointer; -webkit-tap-highlight-color: transparent; white-space: nowrap; }
 .filter-btn.active { background: #1e2d5e; border-color: #4f6ef7; color: #7fa3f8; }
+#rebate-btn { border-color: #e07040; color: #e07040; }
+#rebate-btn.active { background: #2a1500; border-color: #e07040; color: #e07040; }
 .sort-wrap { display: flex; align-items: center; gap: 8px; }
 .sort-select { background: #1a1d22; border: 1px solid #2a2f38; border-radius: 6px; color: #9ba3af; padding: 6px 8px; font-size: 11px; outline: none; -webkit-appearance: none; flex: 1; }
 .count { font-size: 11px; color: #4b5563; white-space: nowrap; }
@@ -81,14 +83,15 @@ table.hide-net td:nth-child(6) { display: none; }
 </head>
 <body>
 <h1>Sigma Technical and Sales Reference Guide</h1>
-<p class="subtitle">March 2026 -- Mirrorless (DG DN / DC DN / DC) &amp; DSLR (DG HSM / DC HSM) &amp; Cameras &amp; Accessories</p>
+<p class="subtitle">March 2026 &mdash; Mirrorless (DG DN / DC DN) &amp; DSLR (DG HSM / DC HSM) &amp; Cameras &amp; Accessories</p>
 <div class="stats-row">
   <div class="stat-card"><div class="lbl">Total lenses</div><div class="val" id="st-total">-</div></div>
   <div class="stat-card"><div class="lbl">Mirrorless</div><div class="val" id="st-ml">-</div></div>
   <div class="stat-card"><div class="lbl">DSLR</div><div class="val" id="st-dslr">-</div></div>
-  <div class="stat-card"><div class="lbl">Lowest MAP</div><div class="val" id="st-lo">-</div></div>
-  <div class="stat-card"><div class="lbl">Highest MAP</div><div class="val" id="st-hi">-</div></div>
-  <div class="stat-card"><div class="lbl">Shown</div><div class="val" id="st-shown">-</div></div>
+  <div class="stat-card"><div class="lbl">Last Updated</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 18, 2026<br>v1.8</div></div>
+  <div class="stat-card"><div class="lbl">Current Instant Savings Program Dates</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 2 - Mar 29, 2026</div></div>
+  
+  <div class="stat-card"><div class="lbl">Version</div><div class="val">v1.8</div></div>
 </div>
 <div class="controls">
   <input type="search" class="search-box" id="search" placeholder="Search..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
@@ -105,6 +108,7 @@ table.hide-net td:nth-child(6) { display: none; }
     <button class="filter-btn" data-f="zoom">Zooms</button>
     <button class="filter-btn" data-f="cameras">Cameras</button>
     <button class="filter-btn" data-f="accessories">Accessories</button>
+    <button class="filter-btn" id="rebate-btn" data-f="rebate">On Instant Rebate</button>
   </div>
   <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
     <button id="net-toggle" class="filter-btn" style="background:#2a1010;border-color:#5a2020;color:#e06060;">Hide Dealer Net</button>
@@ -330,6 +334,7 @@ function pageUrl(cat, slug) {
 var filterA = "";
 var filterB = "";
 var filterC = "";
+var filterD = "";
 var curSort = "cat";
 var curSearch = "";
 
@@ -353,6 +358,8 @@ function matches(l) {
 
   if (filterC === "prime"        && type !== "prime") return false;
   if (filterC === "zoom"         && type !== "zoom")  return false;
+
+  if (filterD === "rebate" && !REBATES[l[0]]) return false;
 
   if (curSearch) {
     var hay = (l[0]+" "+l[1]+" "+l[2]+" "+l[3]+" "+l[4]+" "+l[9]+" "+l[14]).toLowerCase();
@@ -384,7 +391,7 @@ function render(data) {
   var prices = [];
   for (var i = 0; i < data.length; i++) {
     var l = data[i];
-    if (filterA === "" && filterB === "" && filterC === "" && l[1] !== lastCat) {
+    if (filterA === "" && filterB === "" && filterC === "" && filterD === "" && l[1] !== lastCat) {
       lastCat = l[1];
       rows += '<tr class="sec-hdr"><td colspan="13">' + SEC_LABELS[l[1]] + '</td></tr>';
     }
@@ -443,11 +450,7 @@ function render(data) {
   document.getElementById("st-total").textContent = lensCount;
   document.getElementById("st-ml").textContent = mlCount;
   document.getElementById("st-dslr").textContent = dslrCount;
-  document.getElementById("st-shown").textContent = data.length;
-  if (prices.length) {
-    document.getElementById("st-lo").textContent = "$" + Math.min.apply(null, prices).toLocaleString();
-    document.getElementById("st-hi").textContent = "$" + Math.max.apply(null, prices).toLocaleString();
-  }
+
   document.getElementById("cnt").textContent = data.length + " items";
 }
 
@@ -457,9 +460,11 @@ function groupOf(f) {
   var A = ["mirrorless","dslr","ff","apsc","cameras","accessories"];
   var B = ["Art","Contemporary","Sports"];
   var C = ["prime","zoom"];
+  var D = ["rebate"];
   for (var i = 0; i < A.length; i++) { if (A[i] === f) return "A"; }
   for (var i = 0; i < B.length; i++) { if (B[i] === f) return "B"; }
   for (var i = 0; i < C.length; i++) { if (C[i] === f) return "C"; }
+  for (var i = 0; i < D.length; i++) { if (D[i] === f) return "D"; }
   return "";
 }
 
@@ -469,10 +474,10 @@ function updateButtonStates() {
     if (btns[k].id === "net-toggle") continue;
     var f = btns[k].getAttribute("data-f");
     if (f === "all") {
-      btns[k].className = (filterA === "" && filterB === "" && filterC === "") ? "filter-btn active" : "filter-btn";
+      btns[k].className = (filterA === "" && filterB === "" && filterC === "" && filterD === "") ? "filter-btn active" : "filter-btn";
     } else {
       var g = groupOf(f);
-      var active = (g === "A" && filterA === f) || (g === "B" && filterB === f) || (g === "C" && filterC === f);
+      var active = (g === "A" && filterA === f) || (g === "B" && filterB === f) || (g === "C" && filterC === f) || (g === "D" && filterD === f);
       btns[k].className = active ? "filter-btn active" : "filter-btn";
     }
   }
@@ -492,13 +497,14 @@ window.onload = function() {
         if (btn.id === "net-toggle") return;
         var f = btn.getAttribute("data-f");
         if (f === "all") {
-          filterA = ""; filterB = ""; filterC = "";
+          filterA = ""; filterB = ""; filterC = ""; filterD = "";
         } else {
           var g = groupOf(f);
           // Toggle: clicking active filter in a group clears it, else sets it
           if (g === "A") { filterA = (filterA === f) ? "" : f; }
           if (g === "B") { filterB = (filterB === f) ? "" : f; }
           if (g === "C") { filterC = (filterC === f) ? "" : f; }
+          if (g === "D") { filterD = (filterD === f) ? "" : f; }
         }
         updateButtonStates();
         render(getFiltered());
