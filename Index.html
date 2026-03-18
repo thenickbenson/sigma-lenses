@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sigma Technical and Sales Reference Guide</title>
+<link rel="icon" type="image/png" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d0f12; color: #e0e4eb; padding: 16px 12px; }
+h1 { font-size: 18px; font-weight: 600; color: #f0f3f7; margin-bottom: 2px; }
+.subtitle { font-size: 11px; color: #6b7280; margin-bottom: 14px; line-height: 1.4; }
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
+.stat-card { background: #141720; border: 1px solid #1f2430; border-radius: 7px; padding: 8px 10px; }
+.stat-card .lbl { font-size: 10px; color: #4b5563; margin-bottom: 2px; }
+.stat-card .val { font-size: 15px; font-weight: 600; color: #d1d8e4; }
+.controls { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.search-box { background: #1a1d22; border: 1px solid #2a2f38; border-radius: 6px; color: #e0e4eb; padding: 8px 12px; font-size: 14px; width: 100%; outline: none; -webkit-appearance: none; }
+.filter-row { display: flex; flex-wrap: wrap; gap: 5px; }
+.filter-btn { background: #1a1d22; border: 1px solid #2a2f38; border-radius: 6px; color: #9ba3af; padding: 5px 10px; font-size: 11px; cursor: pointer; -webkit-tap-highlight-color: transparent; white-space: nowrap; }
+.filter-btn.active { background: #1e2d5e; border-color: #4f6ef7; color: #7fa3f8; }
+#rebate-btn { border-color: #e07040; color: #e07040; }
+#rebate-btn.active { background: #2a1500; border-color: #e07040; color: #e07040; }
+.sort-wrap { display: flex; align-items: center; gap: 8px; }
+.sort-select { background: #1a1d22; border: 1px solid #2a2f38; border-radius: 6px; color: #9ba3af; padding: 6px 8px; font-size: 11px; outline: none; -webkit-appearance: none; flex: 1; }
+.count { font-size: 11px; color: #4b5563; white-space: nowrap; }
+.table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid #1f2430; }
+table { border-collapse: collapse; font-size: 11px; width: max-content; min-width: 100%; }
+thead tr { background: #141720; }
+th { padding: 8px 10px; text-align: left; font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #4b5563; border-bottom: 1px solid #1f2430; white-space: nowrap; }
+tbody tr { border-bottom: 1px solid #161a22; }
+tbody tr.r-mff   { border-left: 2px solid #1a2550; }
+tbody tr.r-mis   { border-left: 2px solid #2a1a50; }
+tbody tr.r-mapc  { border-left: 2px solid #1d3a2a; }
+tbody tr.r-dff   { border-left: 2px solid #3a2010; }
+tbody tr.r-dapc  { border-left: 2px solid #3a1010; }
+tbody tr.r-cam   { border-left: 2px solid #504a10; }
+tbody tr.r-acc   { border-left: 2px solid #105050; }
+tbody tr.sec-hdr td { background: #0f1320; color: #4b5563; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; padding: 6px 10px; border-top: 1px solid #1f2430; }
+td { padding: 6px 10px; vertical-align: middle; white-space: nowrap; }
+.ln { font-weight: 500; color: #d1d8e4; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+.code-cell { font-family: monospace; font-size: 10px; color: #6b7280; }
+.fmt-mff  { display:inline-block; font-size:9px; font-weight:700; padding:2px 5px; border-radius:3px; background:#1a2550; color:#6a93f8; border:1px solid #2a3d80; }
+.fmt-mis  { display:inline-block; font-size:9px; font-weight:700; padding:2px 5px; border-radius:3px; background:#2a1a50; color:#b07af8; border:1px solid #3a2a80; }
+.fmt-mapc { display:inline-block; font-size:9px; font-weight:700; padding:2px 5px; border-radius:3px; background:#102a1a; color:#5dc87a; border:1px solid #1e5030; }
+.fmt-dff  { display:inline-block; font-size:9px; font-weight:700; padding:2px 5px; border-radius:3px; background:#3a2010; color:#e0904a; border:1px solid #5a3a1a; }
+.fmt-dapc { display:inline-block; font-size:9px; font-weight:700; padding:2px 5px; border-radius:3px; background:#3a1010; color:#e06060; border:1px solid #5a2020; }
+.fmt-cam  { display:inline-block; font-size:9px; font-weight:700; padding:2px 5px; border-radius:3px; background:#1a1a10; color:#d4c460; border:1px solid #504a10; }
+.fmt-acc  { display:inline-block; font-size:9px; font-weight:700; padding:2px 5px; border-radius:3px; background:#101a1a; color:#60c4c4; border:1px solid #105050; }
+.b-art { display:inline-block; font-size:9px; font-weight:600; padding:2px 5px; border-radius:3px; background:#1e1540; color:#9d7cf8; border:1px solid #3d2a7a; }
+.b-con { display:inline-block; font-size:9px; font-weight:600; padding:2px 5px; border-radius:3px; background:#102030; color:#5aabda; border:1px solid #1e4f70; }
+.b-spo { display:inline-block; font-size:9px; font-weight:600; padding:2px 5px; border-radius:3px; background:#1a2210; color:#6ec26a; border:1px solid #2e5028; }
+.b-other { display:inline-block; font-size:9px; font-weight:600; padding:2px 5px; border-radius:3px; background:#1a1a10; color:#d4c460; border:1px solid #504a10; }
+.map-price { color: #e0e4eb; font-variant-numeric: tabular-nums; font-weight: 500; }
+.map-rebate { color: #e07040; font-variant-numeric: tabular-nums; font-weight: 600; cursor: pointer; position: relative; }
+.map-rebate:after { content: attr(data-tip); display: none; position: absolute; left: 0; top: 120%; background: #1a2810; color: #80d860; border: 1px solid #2e5028; border-radius: 5px; padding: 4px 8px; font-size: 10px; white-space: nowrap; z-index: 99; font-weight: 500; }
+.map-rebate:hover:after { display: block; }
+.map-rebate.tip-open:after { display: block; }
+.net-price { color: #6ec26a; font-variant-numeric: tabular-nums; }
+.mounts { color: #9ba3af; font-size: 10px; }
+.acc-cell { color: #6b7280; font-size: 10px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
+.flt { color: #9ba3af; }
+.flt-lg { color: #e09040; }
+.m-hla  { font-size:9px; padding:2px 5px; border-radius:3px; background:#162030; color:#5aabda; border:1px solid #1e4060; }
+.m-dual { font-size:9px; padding:2px 5px; border-radius:3px; background:#1a1040; color:#a07af8; border:1px solid #3a2070; }
+.m-stm  { font-size:9px; padding:2px 5px; border-radius:3px; background:#1a2810; color:#6ec26a; border:1px solid #2e5028; }
+.m-hsm  { font-size:9px; padding:2px 5px; border-radius:3px; background:#302010; color:#e0904a; border:1px solid #5a3a1a; }
+.os-y { color:#6ec26a; }
+.os-n { color:#2a3040; }
+.tag     { display:inline-block; font-size:9px; background:#1c2030; color:#4b5563; border-radius:3px; padding:1px 4px; margin:1px; }
+.tag-w1  { background:#1a2810; color:#5d9e55; border:1px solid #2e5028; }
+.tag-mc  { background:#1a1a30; color:#7878d8; border:1px solid #303060; }
+.tag-fi  { background:#201818; color:#c07070; border:1px solid #503030; }
+.tag-nw  { background:#1a2810; color:#80d860; border:1px solid #2e5028; font-weight:700; }
+table.hide-net th:nth-child(6),
+table.hide-net td:nth-child(6) { display: none; }
+.sig-link { display:inline-flex; align-items:center; gap:3px; font-size:10px; color:#4b5563; text-decoration:none; border:1px solid #2a2f38; border-radius:4px; padding:3px 7px; -webkit-tap-highlight-color:transparent; white-space:nowrap; }
+.legend { display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; font-size:10px; color:#4b5563; }
+.legend span { display:flex; align-items:center; gap:4px; }
+.leg-dot { width:8px; height:3px; border-radius:2px; display:inline-block; }
+</style>
+</head>
+<body>
+<h1>Sigma Technical and Sales Reference Guide</h1>
+<p class="subtitle">Mirrorless (DG DN / DC DN) &amp; DSLR (DG HSM / DC HSM) Lenses, Cameras, and Accessories</p>
+<div class="stats-row">
+  <div class="stat-card"><div class="lbl">Total lenses</div><div class="val" id="st-total">-</div></div>
+  <div class="stat-card"><div class="lbl">Mirrorless</div><div class="val" id="st-ml">-</div></div>
+  <div class="stat-card"><div class="lbl">DSLR</div><div class="val" id="st-dslr">-</div></div>
+  <div class="stat-card"><div class="lbl">Last Updated</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 18, 2026</div></div>
+  <div class="stat-card"><div class="lbl">Current Instant Savings Program Dates</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 2 - Mar 29, 2026</div></div>
+  
+  <div class="stat-card"><div class="lbl">Version</div><div class="val">v1.8</div></div>
+</div>
+<div class="controls">
+  <input type="search" class="search-box" id="search" placeholder="Search..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+  <div class="filter-row">
+    <button class="filter-btn active" data-f="all">All</button>
+    <button class="filter-btn" data-f="mirrorless">Mirrorless</button>
+    <button class="filter-btn" data-f="dslr">DSLR</button>
+    <button class="filter-btn" data-f="ff">Full-frame</button>
+    <button class="filter-btn" data-f="apsc">APS-C</button>
+    <button class="filter-btn" data-f="Art">Art</button>
+    <button class="filter-btn" data-f="Contemporary">Contemporary</button>
+    <button class="filter-btn" data-f="Sports">Sports</button>
+    <button class="filter-btn" data-f="prime">Primes</button>
+    <button class="filter-btn" data-f="zoom">Zooms</button>
+    <button class="filter-btn" data-f="cameras">Cameras</button>
+    <button class="filter-btn" data-f="accessories">Accessories</button>
+    <button class="filter-btn" id="rebate-btn" data-f="rebate">On Instant Rebate</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
+    <button id="net-toggle" class="filter-btn" style="background:#2a1010;border-color:#5a2020;color:#e06060;">Hide Dealer Net</button>
+  </div>
+  <div class="sort-wrap">
+    <select class="sort-select" id="sort-sel">
+      <option value="cat">Sort: Category</option>
+      <option value="map">Sort: MAP price low to high</option>
+      <option value="net">Sort: Dealer net low to high</option>
+    </select>
+    <span class="count" id="cnt"></span>
+  </div>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr>
+  <th>Code</th><th>Category</th><th>Lens / Product</th><th>Line</th>
+  <th>MAP</th><th id="th-net">Dealer Net</th><th>Mounts</th><th>Filter</th>
+  <th>AF Motor</th><th>OS</th><th>Accessories Included</th><th>Notes</th><th>Page</th>
+</tr></thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+<div style="font-size:10px;color:#e07040;margin-top:8px;">* Instant savings program active March 2 - March 29, 2026. Hover or tap price for details.</div>
+<div class="legend">
+  <span><span class="leg-dot" style="background:#1a2550"></span>M FF (DG DN)</span>
+  <span><span class="leg-dot" style="background:#2a1a50"></span>I-series</span>
+  <span><span class="leg-dot" style="background:#1d3a2a"></span>M APS-C (DC)</span>
+  <span><span class="leg-dot" style="background:#3a2010"></span>DSLR FF (DG HSM)</span>
+  <span><span class="leg-dot" style="background:#3a1010"></span>DSLR APS-C (DC HSM)</span>
+  <span><span class="leg-dot" style="background:#504a10"></span>Camera</span>
+  <span><span class="leg-dot" style="background:#105050"></span>Accessory</span>
+</div>
+<script>
+
+var BASE = "https://www.sigma-global.com/en/lenses/";
+var BCAM = "https://www.sigma-global.com/en/cameras/";
+var BACC = "https://www.sigma-global.com/en/accessories/";
+// Rebates: code -> {save, now, expires}
+var REBATES = {
+  "612": {save:75,  now:1414, expires:"Mar 29, 2026"},
+  "592": {save:100, now:889,  expires:"Mar 29, 2026"},
+  "750": {save:50,  now:999,  expires:"Mar 29, 2026"},
+  "747": {save:100, now:1549, expires:"Mar 29, 2026"},
+  "207": {save:50,  now:679,  expires:"Mar 29, 2026"},
+  "416": {save:50,  now:579,  expires:"Mar 29, 2026"},
+  "887": {save:75,  now:694,  expires:"Mar 29, 2026"}
+};
+
+var L = [
+["213","mff","14-24mm F2.8 DG DN","Art","zoom",14,24,1299,1299,"Sony E, L","Gel","HLA",0,"Cover Cap, Case","no-front-filter","a019_14_24_28/"],
+["206","mff","16-28mm F2.8 DG DN","Contemporary","zoom",16,28,989,849,"Sony E, L","72mm","HLA",0,"Hood","compact UWA zoom","c022_16_28_28/"],
+["796","mff","20-200mm F3.5-6.3 DG","Contemporary","zoom",20,200,999,869,"Sony E, L","72mm","HLA",0,"Hood, Pouch","world1 20mm 10x zoom","c025_20_200_35_63/"],
+["57A","mff","24-70mm F2.8 DG DN II","Art","zoom",24,70,1319,1139,"Sony E, L","82mm","HLA",0,"Hood, Case","aperture-ring","a024_24_70_28_ii/"],
+["612","mff","28-45mm F1.8 DG DN","Art","zoom",28,45,1489,1269,"Sony E, L","82mm","HLA",0,"Hood, Case","world1 F1.8 FF zoom,aperture-ring","a024_28_45_18/"],
+["592","mff","28-70mm F2.8 DG DN","Contemporary","zoom",28,70,989,839,"Sony E, L","67mm","HLA",0,"Hood","","c021_28_70_28/"],
+["636","mff","28-105mm F2.8 DG DN","Art","zoom",28,105,1649,1419,"Sony E, L","82mm","HLA",0,"Hood, Case","constant F2.8","a024_28_105_28/"],
+["732","mff","60-600mm F4.5-6.3 DG DN OS","Sports","zoom",60,600,2199,1929,"Sony E, L","105mm","HLA",1,"Hood","OS,10x zoom","s023_60_600_45_63/"],
+["591","mff","70-200mm F2.8 DG DN OS","Sports","zoom",70,200,1649,1489,"Sony E, L","77mm","HLA",1,"Hood, Case","OS2,aperture-ring","s023_70_200_28/"],
+["750","mff","100-400mm F5-6.3 DG DN OS","Contemporary","zoom",100,400,1049,899,"Sony E, L, Fuji X","67mm","HLA",1,"Hood, Cover","OS","c020_100_400_5_63/"],
+["747","mff","150-600mm F5-6.3 DG DN OS","Sports","zoom",150,600,1649,1399,"Sony E, L","95mm","HLA",1,"Hood, Cover Cap, Case","OS,wildlife","s021_150_600_5_63/"],
+["598","mff","300-600mm F4 DG OS","Sports","zoom",300,600,6599,5829,"Sony E, L","Rear","HLA",1,"Hood, Tripod Socket, Cover Cap, Case","OS2,super-tele","s025_300_600_4/"],
+["45P","mff","14mm F1.4 DG","Art","prime",14,14,1839,1559,"Sony E, L","Gel","HLA",0,"Cover Cap, Tripod Socket, Protective Cover, Pouch","world1 14mm F1.4","a023_14_14_re/"],
+["478","mff","15mm F1.4 DG DN Fisheye","Art","prime",15,15,2199,1939,"Sony E, L","Gel","HLA",0,"Cover Cap, Case","fisheye,world1,astrophoto","a024_15_14/"],
+["414","mff","20mm F1.4 DG DN","Art","prime",20,20,989,859,"Sony E, L","82mm","HLA",0,"Hood, Case","astrophoto","a022_20_14/"],
+["405","mff","24mm F1.4 DG DN","Art","prime",24,24,879,789,"Sony E, L","72mm","HLA",0,"Hood, Case","","a022_24_14/"],
+["341","mff","35mm F1.2 DG DN","Art","prime",35,35,1649,1379,"L","82mm","DualHLA",0,"Hood, Case","L-mount only","a019_35_12/"],
+["370","mff","35mm F1.2 DG II","Art","prime",35,35,1549,1399,"Sony E, L","72mm","DualHLA",0,"Hood, Pouch","world1","a025_35_12/"],
+["303","mff","35mm F1.4 DG DN","Art","prime",35,35,989,869,"Sony E, L","67mm","HLA",0,"Hood, Case","","a021_35_14/"],
+["304","mff","35mm F1.4 DG II","Art","prime",35,35,1059,929,"Sony E, L","67mm","HLA",0,"Hood, Pouch","new","a026_35_14/"],
+["316","mff","50mm F1.2 DG DN","Art","prime",50,50,1539,1349,"Sony E, L","72mm","DualHLA",0,"Hood, Case","13-blade","a024_50_12/"],
+["315","mff","50mm F1.4 DG DN","Art","prime",50,50,939,839,"Sony E, L","72mm","HLA",0,"Hood","","a023_50_14/"],
+["322","mff","85mm F1.4 DG DN","Art","prime",85,85,1319,1099,"Sony E, L","77mm","HLA",0,"Hood","","a020_85_14/"],
+["260","mff","105mm F2.8 DG DN Macro","Art","prime",105,105,879,769,"Sony E, L","62mm","HLA",0,"Hood","macro","a020_105_28/"],
+["241","mff","135mm F1.4 DG","Art","prime",135,135,1899,1709,"Sony E, L","105mm","DualHLA",0,"Hood, Tripod Socket, Protective Cover, Pouch","world1,portrait","a025_135_14/"],
+["227","mff","200mm F2 DG OS","Sports","prime",200,200,3299,2879,"Sony E, L","105mm","HLA",1,"Hood, Tripod Socket, Pouch","OS2","s025_200_2/"],
+["186","mff","500mm F5.6 DG DN OS","Sports","prime",500,500,3299,2919,"Sony E, L","95mm","HLA",1,"Hood, Case","OS2,super-tele","s024_500_56/"],
+["41B","mis","17mm F4 DG II (Black)","Contemporary","prime",17,17,659,559,"Sony E, L","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal","c023_17_4_re/"],
+["41S","mis","17mm F4 DG II (Silver)","Contemporary","prime",17,17,659,559,"L","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver","c023_17_4_re/"],
+["49B","mis","20mm F2 DG II (Black)","Contemporary","prime",20,20,769,649,"Sony E, L","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal","c022_20_2_re/"],
+["49S","mis","20mm F2 DG II (Silver)","Contemporary","prime",20,20,769,649,"L","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver","c022_20_2_re/"],
+["4B3","mis","24mm F2 DG II (Black)","Contemporary","prime",24,24,719,619,"Sony E, L","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal","c021_24_2_re/"],
+["4S3","mis","24mm F2 DG II (Silver)","Contemporary","prime",24,24,719,619,"L","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver","c021_24_2_re/"],
+["4B4","mis","24mm F3.5 DG II (Black)","Contemporary","prime",24,24,619,519,"Sony E, L","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,macro-close","c021_24_35_re/"],
+["4S4","mis","24mm F3.5 DG II (Silver)","Contemporary","prime",24,24,619,519,"L","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,macro-close,silver","c021_24_35_re/"],
+["3B7","mis","35mm F2 DG II (Black)","Contemporary","prime",35,35,719,599,"Sony E, L","58mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal","c020_35_2_re/"],
+["3S7","mis","35mm F2 DG II (Silver)","Contemporary","prime",35,35,719,599,"L","58mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver","c020_35_2_re/"],
+["36B","mis","45mm F2.8 DG II (Black)","Contemporary","prime",45,45,619,519,"Sony E, L","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,pancake","c019_45_28_re/"],
+["36S","mis","45mm F2.8 DG II (Silver)","Contemporary","prime",45,45,619,519,"L","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,pancake,silver","c019_45_28_re/"],
+["31B","mis","50mm F2 DG II (Black)","Contemporary","prime",50,50,719,599,"Sony E, L","58mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal","c023_50_2_re/"],
+["31S","mis","50mm F2 DG II (Silver)","Contemporary","prime",50,50,719,599,"L","58mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver","c023_50_2_re/"],
+["3B3","mis","65mm F2 DG II (Black)","Contemporary","prime",65,65,769,649,"Sony E, L","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal","c020_65_2_re/"],
+["3S3","mis","65mm F2 DG II (Silver)","Contemporary","prime",65,65,769,649,"L","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver","c020_65_2_re/"],
+["26B","mis","90mm F2.8 DG II (Black)","Contemporary","prime",90,90,719,619,"Sony E, L","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal","c021_90_28_re/"],
+["26S","mis","90mm F2.8 DG II (Silver)","Contemporary","prime",90,90,719,619,"L","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver","c021_90_28_re/"],
+["207","mapc","10-18mm F2.8 DC DN","Contemporary","zoom",10,18,729,639,"Sony E, L, RF, Fuji X","67mm","STM",0,"Hood","","c023_10_18_28/"],
+["887","mapc","16-300mm F3.5-6.7 DC OS","Contemporary","zoom",16,300,769,689,"Sony E, L, RF, Fuji X","67mm","HLA",1,"Hood, Pouch","world1 18.8x zoom,OS,1:2 macro","c025_16_300_35_67/"],
+["214","mapc","17-40mm F1.8 DC","Art","zoom",17,40,919,799,"Sony E, L, RF, Fuji X","67mm","HLA",0,"Hood, Pouch","world1 F1.8 APS-C zoom,aperture-ring","a025_17_40_18/"],
+["585","mapc","18-50mm F2.8 DC DN","Contemporary","zoom",18,50,659,549,"Sony E, L, RF, Fuji X","55mm","STM",0,"Hood","","c021_18_50_28/"],
+["416","mapc","12mm F1.4 DC","Contemporary","prime",12,12,629,549,"Sony E, RF, Fuji X","62mm","STM",0,"Hood, Pouch","world1 12mm F1.4 APS-C,aperture-ring,new","c025_12_14/"],
+["406","mapc","15mm F1.4 DC","Contemporary","prime",15,15,579,499,"Sony E, RF, Fuji X","58mm","STM",0,"Hood, Pouch","new,aperture-ring","c026_15_14/"],
+["402","mapc","16mm F1.4 DC DN","Contemporary","prime",16,16,539,469,"Sony E, MFT, Canon M, L, RF, Fuji X","67mm","STM",0,"Hood","","c017_16_14/"],
+["348","mapc","23mm F1.4 DC DN","Contemporary","prime",23,23,659,549,"Sony E, L, RF, Fuji X","52mm","STM",0,"Hood","","c023_23_14/"],
+["302","mapc","30mm F1.4 DC DN","Contemporary","prime",30,30,419,349,"Sony E, MFT, Canon M, L, RF, Fuji X, Nikon Z","52mm","STM",0,"Hood","","c016_30_14/"],
+["351","mapc","56mm F1.4 DC DN","Contemporary","prime",56,56,579,479,"Sony E, MFT, Canon M, L, RF, Fuji X, Nikon Z","55mm","STM",0,"Hood","portrait tele","c018_56_14/"],
+["212","dff","14-24mm F2.8 DG HSM","Art","zoom",14,24,1429,1189,"Nikon F, Sigma","Gel","HSM",0,"Cover Cap, Case","no-front-filter","a018_14_24_28/"],
+["576","dff","24-70mm F2.8 DG OS HSM","Art","zoom",24,70,1429,1219,"Canon EF, Nikon F, Sigma","82mm","HSM",1,"Perfect Hood, Case","OS","a017_24_70_28/"],
+["730","dff","60-600mm F4.5-6.3 DG OS HSM","Sports","zoom",60,600,2199,1869,"Sigma","105mm","HSM",1,"Perfect Hood, Case","OS,10x zoom","s018_60_600_45_63/"],
+["590","dff","70-200mm F2.8 DG OS HSM","Sports","zoom",70,200,1649,1379,"Canon EF, Sigma","82mm","HSM",1,"Perfect Hood, Case","OS","s016_70_200_28/"],
+["401","dff","24mm F1.4 DG HSM","Art","prime",24,24,939,789,"L","77mm","HSM",0,"Hood, Case","","a015_24_14/"],
+["441","dff","28mm F1.4 DG HSM","Art","prime",28,28,879,809,"Nikon F, Sony E, L","77mm","HSM",0,"Hood, Case","","a019_28_14/"],
+["340","dff","35mm F1.4 DG HSM","Art","prime",35,35,989,869,"Nikon F, Pentax, Sigma","67mm","HSM",0,"Perfect Hood, Case","","a013_35_14/"],
+["311","dff","50mm F1.4 DG HSM","Art","prime",50,50,1049,869,"Nikon F, L","77mm","HSM",0,"Perfect Hood, Case","","a014_50_14/"],
+["321","dff","85mm F1.4 DG HSM","Art","prime",85,85,1319,1099,"Nikon F, Sigma","86mm","HSM",0,"Perfect Hood, Case","","a016_85_14/"],
+["185","dff","500mm F4.0 DG OS HSM","Sports","prime",500,500,6599,5829,"Sigma","Rear","HSM",1,"Perfect Hood, Case","OS,super-tele","s013_500_4/"],
+["301","dapc","30mm F1.4 DC HSM","Art","prime",30,30,549,489,"Nikon F","62mm","HSM",0,"Perfect Hood, Case","","a013_30_14/"],
+["210","dapc","18-35mm F1.8 DC HSM","Art","zoom",18,35,879,749,"Nikon F","72mm","HSM",0,"Perfect Hood, Case","world1 F1.8 zoom","a013_18_35_18/"],
+["693","dapc","50-100mm F1.8 DC HSM","Art","zoom",50,100,1209,1039,"Nikon F, Sigma","82mm","HSM",0,"Perfect Hood, Case","world1 F1.8 tele zoom","a016_50_100_18/"],
+["C46900","cam","BF Camera (Black)","Camera","body",0,0,2199,1969,"L","--","--",0,"Body Cap, Battery BP-51, Hot Shoe, USB-C Adapter, USB Cable, Strap","","fp/"],
+["C47900","cam","BF Camera (Silver)","Camera","body",0,0,2199,1969,"L","--","--",0,"Body Cap, Battery BP-51, Hot Shoe, USB-C Adapter, USB Cable, Strap","","fp/"],
+["C44900","cam","fp L Digital Camera","Camera","body",0,0,2749,2319,"L","--","--",0,"Metal Body Cap, Battery BP-81, Start Guide","","fpl/"],
+["1H900","cam","fp L + EVF-11 Bundle","Camera","bundle",0,0,3299,2749,"L","--","--",0,"Body Cap, Battery BP-81, EVF-11, Start Guide","bundle","fpl/"],
+["89E965","acc","MC-11 Converter (Canon EF SGV)","Accessory","converter",0,0,279,229,"Sony E","--","--",0,"USB Cord","Canon EF to Sony E","mc-11/"],
+["89S965","acc","MC-11 Converter (Sigma SGV)","Accessory","converter",0,0,279,229,"Sony E","--","--",0,"USB Cord","Sigma to Sony E","mc-11/"],
+["89S969","acc","MC-21 Converter (Sigma SGV)","Accessory","converter",0,0,189,139,"L","--","--",0,"","Sigma to L-Mount","mc-21/"],
+["878","acc","USB Dock (SGV Lenses)","Accessory","dock",0,0,65,54,"Canon EF, Nikon F, Sony A, Pentax, Sigma, L, Canon M","--","--",0,"USB Cord","lens calibration","usb-dock/"],
+["825","acc","1.4x Teleconverter TC-1411","Accessory","teleconverter",0,0,449,369,"L","--","--",0,"","1.4x L-mount SGV lenses","tc-1411/"],
+["826","acc","2.0x Teleconverter TC-2011","Accessory","teleconverter",0,0,479,399,"L","--","--",0,"","2.0x L-mount SGV lenses","tc-2011/"],
+["879","acc","1.4x Teleconverter TC-1401","Accessory","teleconverter",0,0,389,319,"Canon EF, Nikon F, Sigma","--","--",0,"Case","1.4x DSLR SGV lenses","tc-1401/"],
+["870","acc","2.0x Teleconverter TC-2001","Accessory","teleconverter",0,0,449,389,"Canon EF, Nikon F, Sigma","--","--",0,"Case","2.0x DSLR SGV lenses","tc-2001/"]
+];
+
+var CAT_ORDER = ["mff","mis","mapc","dff","dapc","cam","acc"];
+var SEC_LABELS = {
+  "mff":  "Mirrorless Full-Frame (DG DN)",
+  "mis":  "Mirrorless I-Series (DG DN)",
+  "mapc": "Mirrorless APS-C (DC DN / DC)",
+  "dff":  "DSLR Full-Frame (DG HSM)",
+  "dapc": "DSLR APS-C (DC HSM)",
+  "cam":  "Sigma Digital Cameras",
+  "acc":  "Global Vision Accessories"
+};
+
+var activeFilters = [];
+var curSort = "cat";
+var curSearch = "";
+var netVisible = true;
+
+function catLabel(c) {
+  if (c === "mff")  return "M FF";
+  if (c === "mis")  return "I-series";
+  if (c === "mapc") return "M APS-C";
+  if (c === "dff")  return "DSLR FF";
+  if (c === "dapc") return "DSLR APS-C";
+  if (c === "cam")  return "Camera";
+  return "Accessory";
+}
+function catCls(c) {
+  if (c === "mff")  return "fmt-mff";
+  if (c === "mis")  return "fmt-mis";
+  if (c === "mapc") return "fmt-mapc";
+  if (c === "dff")  return "fmt-dff";
+  if (c === "dapc") return "fmt-dapc";
+  if (c === "cam")  return "fmt-cam";
+  return "fmt-acc";
+}
+function rowCls(c) {
+  if (c === "mff")  return "r-mff";
+  if (c === "mis")  return "r-mis";
+  if (c === "mapc") return "r-mapc";
+  if (c === "dff")  return "r-dff";
+  if (c === "dapc") return "r-dapc";
+  if (c === "cam")  return "r-cam";
+  return "r-acc";
+}
+function lineBadge(l) {
+  if (l === "Art")    return '<span class="b-art">Art</span>';
+  if (l === "Sports") return '<span class="b-spo">Sports</span>';
+  if (l === "Camera" || l === "Accessory") return '<span class="b-other">' + l + '</span>';
+  return '<span class="b-con">Contemp.</span>';
+}
+function motorChip(af) {
+  if (af === "DualHLA") return '<span class="m-dual">Dual HLA</span>';
+  if (af === "HLA")     return '<span class="m-hla">HLA</span>';
+  if (af === "STM")     return '<span class="m-stm">STM</span>';
+  if (af === "HSM")     return '<span class="m-hsm">HSM</span>';
+  return "--";
+}
+function noteTags(s) {
+  if (!s) return "";
+  var parts = s.split(",");
+  var out = "";
+  for (var i = 0; i < parts.length; i++) {
+    var n = parts[i];
+    if (!n) continue;
+    if (n === "world1" || n.indexOf("world1 ") === 0) {
+      out += '<span class="tag tag-w1">World 1st</span>';
+    } else if (n === "fisheye") {
+      out += '<span class="tag tag-fi">Fisheye</span>';
+    } else if (n === "macro") {
+      out += '<span class="tag tag-mc">1:1 Macro</span>';
+    } else if (n === "new") {
+      out += '<span class="tag tag-nw">NEW</span>';
+    } else if (n === "bundle") {
+      out += '<span class="tag">Bundle</span>';
+    } else {
+      out += '<span class="tag">' + n.replace(/-/g, " ") + '</span>';
+    }
+  }
+  return out;
+}
+function pageUrl(cat, slug) {
+  if (cat === "cam") return BCAM + slug;
+  if (cat === "acc") return BACC + slug;
+  return BASE + slug;
+}
+
+// ---- FILTER STATE ----
+// Three independent slots - one selection per group (or empty = no constraint)
+// Group A: format/category  (mirrorless, dslr, ff, apsc, cameras, accessories)
+// Group B: line             (Art, Contemporary, Sports)
+// Group C: type             (prime, zoom)
+var filterA = "";
+var filterB = "";
+var filterC = "";
+var filterD = "";
+var curSort = "cat";
+var curSearch = "";
+
+function matches(l) {
+  var c = l[1], line = l[3], type = l[4];
+  var isMirrorless = (c === "mff" || c === "mis" || c === "mapc");
+  var isDSLR       = (c === "dff" || c === "dapc");
+  var isFF         = (c === "mff" || c === "mis" || c === "dff");
+  var isAPSC       = (c === "mapc" || c === "dapc");
+
+  if (filterA === "mirrorless"   && !isMirrorless)  return false;
+  if (filterA === "dslr"         && !isDSLR)         return false;
+  if (filterA === "ff"           && !isFF)            return false;
+  if (filterA === "apsc"         && !isAPSC)          return false;
+  if (filterA === "cameras"      && c !== "cam")      return false;
+  if (filterA === "accessories"  && c !== "acc")      return false;
+
+  if (filterB === "Art"          && line !== "Art")          return false;
+  if (filterB === "Contemporary" && line !== "Contemporary") return false;
+  if (filterB === "Sports"       && line !== "Sports")       return false;
+
+  if (filterC === "prime"        && type !== "prime") return false;
+  if (filterC === "zoom"         && type !== "zoom")  return false;
+
+  if (filterD === "rebate" && !REBATES[l[0]]) return false;
+
+  if (curSearch) {
+    var hay = (l[0]+" "+l[1]+" "+l[2]+" "+l[3]+" "+l[4]+" "+l[9]+" "+l[14]).toLowerCase();
+    if (hay.indexOf(curSearch) < 0) return false;
+  }
+  return true;
+}
+
+function getFiltered() {
+  var out = [];
+  for (var i = 0; i < L.length; i++) {
+    if (matches(L[i])) out.push(L[i]);
+  }
+  out.sort(function(a, b) {
+    if (curSort === "map") return a[7] - b[7];
+    if (curSort === "net") return a[8] - b[8];
+    var ao = CAT_ORDER.indexOf(a[1]);
+    var bo = CAT_ORDER.indexOf(b[1]);
+    if (ao !== bo) return ao - bo;
+    if (a[5] !== b[5]) return a[5] - b[5];
+    return a[6] - b[6];
+  });
+  return out;
+}
+
+function render(data) {
+  var rows = "";
+  var lastCat = "";
+  var prices = [];
+  for (var i = 0; i < data.length; i++) {
+    var l = data[i];
+    if (filterA === "" && filterB === "" && filterC === "" && filterD === "" && l[1] !== lastCat) {
+      lastCat = l[1];
+      rows += '<tr class="sec-hdr"><td colspan="13">' + SEC_LABELS[l[1]] + '</td></tr>';
+    }
+    prices.push(l[7]);
+    var mapCls = "map-price";
+    var filterCls = (parseInt(l[10]) >= 95) ? "flt flt-lg" : "flt";
+    var osStr = l[12] ? '<span class="os-y">Y</span>' : '<span class="os-n">-</span>';
+    var href = pageUrl(l[1], l[15]);
+    var rc = rowCls(l[1]);
+    var cc = catCls(l[1]);
+    var cl = catLabel(l[1]);
+    var lb = lineBadge(l[3]);
+    var mc = motorChip(l[11]);
+    var nt = noteTags(l[14]);
+    var map = "$" + l[7].toLocaleString();
+    var net = "$" + l[8].toLocaleString();
+    var rebate = REBATES[l[0]];
+    var mapCell;
+    if (rebate) {
+      var tip = "Save $" + rebate.save + " -- Now $" + rebate.now + " (thru " + rebate.expires + ")";
+      mapCell = '<td class="map-rebate" data-tip="' + tip + '" onclick="toggleTip(this)">' + map + ' *</td>';
+    } else {
+      mapCell = '<td class="' + mapCls + '">' + map + '</td>';
+    }
+    rows += '<tr class="' + rc + '">';
+    rows += '<td class="code-cell">' + l[0] + '</td>';
+    rows += '<td><span class="' + cc + '">' + cl + '</span></td>';
+    rows += '<td class="ln">' + l[2] + '</td>';
+    rows += '<td>' + lb + '</td>';
+    rows += mapCell;
+    rows += '<td class="net-price">' + net + '</td>';
+    rows += '<td class="mounts">' + l[9] + '</td>';
+    rows += '<td class="' + filterCls + '">' + l[10] + '</td>';
+    rows += '<td>' + mc + '</td>';
+    rows += '<td>' + osStr + '</td>';
+    rows += '<td class="acc-cell">' + l[13] + '</td>';
+    rows += '<td>' + nt + '</td>';
+    rows += '<td><a class="sig-link" href="' + href + '" target="_blank">sigma.com</a></td>';
+    rows += '</tr>';
+  }
+  document.getElementById("tbody").innerHTML = rows;
+  if (!netVisible) {
+    document.getElementById("th-net").style.display = "none";
+    var tbl = document.querySelector("table");
+    if (tbl) tbl.className = "hide-net";
+  }
+  var lensCount = 0;
+  var mlCount = 0;
+  var dslrCount = 0;
+  for (var j = 0; j < L.length; j++) {
+    var cat = L[j][1];
+    if (cat !== "cam" && cat !== "acc") lensCount++;
+    if (cat === "mff" || cat === "mis" || cat === "mapc") mlCount++;
+    if (cat === "dff" || cat === "dapc") dslrCount++;
+  }
+  document.getElementById("st-total").textContent = lensCount;
+  document.getElementById("st-ml").textContent = mlCount;
+  document.getElementById("st-dslr").textContent = dslrCount;
+
+  document.getElementById("cnt").textContent = data.length + " items";
+}
+
+
+// Group definitions - which data-f value belongs to which group
+function groupOf(f) {
+  var A = ["mirrorless","dslr","ff","apsc","cameras","accessories"];
+  var B = ["Art","Contemporary","Sports"];
+  var C = ["prime","zoom"];
+  var D = ["rebate"];
+  for (var i = 0; i < A.length; i++) { if (A[i] === f) return "A"; }
+  for (var i = 0; i < B.length; i++) { if (B[i] === f) return "B"; }
+  for (var i = 0; i < C.length; i++) { if (C[i] === f) return "C"; }
+  for (var i = 0; i < D.length; i++) { if (D[i] === f) return "D"; }
+  return "";
+}
+
+function updateButtonStates() {
+  var btns = document.querySelectorAll(".filter-btn");
+  for (var k = 0; k < btns.length; k++) {
+    if (btns[k].id === "net-toggle") continue;
+    var f = btns[k].getAttribute("data-f");
+    if (f === "all") {
+      btns[k].className = (filterA === "" && filterB === "" && filterC === "" && filterD === "") ? "filter-btn active" : "filter-btn";
+    } else {
+      var g = groupOf(f);
+      var active = (g === "A" && filterA === f) || (g === "B" && filterB === f) || (g === "C" && filterC === f) || (g === "D" && filterD === f);
+      btns[k].className = active ? "filter-btn active" : "filter-btn";
+    }
+  }
+}
+
+var netVisible = true;
+
+function toggleTip(el) {
+  el.className = (el.className.indexOf("tip-open") >= 0) ? "map-rebate" : "map-rebate tip-open";
+}
+
+window.onload = function() {
+  var btns = document.querySelectorAll(".filter-btn");
+  for (var bi = 0; bi < btns.length; bi++) {
+    (function(btn) {
+      btn.addEventListener("click", function() {
+        if (btn.id === "net-toggle") return;
+        var f = btn.getAttribute("data-f");
+        if (f === "all") {
+          filterA = ""; filterB = ""; filterC = ""; filterD = "";
+        } else {
+          var g = groupOf(f);
+          // Toggle: clicking active filter in a group clears it, else sets it
+          if (g === "A") { filterA = (filterA === f) ? "" : f; }
+          if (g === "B") { filterB = (filterB === f) ? "" : f; }
+          if (g === "C") { filterC = (filterC === f) ? "" : f; }
+          if (g === "D") { filterD = (filterD === f) ? "" : f; }
+        }
+        updateButtonStates();
+        render(getFiltered());
+      });
+    })(btns[bi]);
+  }
+
+  document.getElementById("sort-sel").addEventListener("change", function() {
+    curSort = this.value;
+    render(getFiltered());
+  });
+
+  document.getElementById("search").addEventListener("input", function() {
+    curSearch = this.value.toLowerCase();
+    render(getFiltered());
+  });
+
+  document.getElementById("net-toggle").addEventListener("click", function() {
+    netVisible = !netVisible;
+    var btn = document.getElementById("net-toggle");
+    var tbl = document.querySelector("table");
+    var th  = document.getElementById("th-net");
+    if (netVisible) {
+      if (tbl) tbl.className = "";
+      if (th)  th.style.display = "";
+      btn.textContent = "Hide Dealer Net";
+      btn.style.background = "#2a1010";
+      btn.style.borderColor = "#5a2020";
+      btn.style.color = "#e06060";
+    } else {
+      if (tbl) tbl.className = "hide-net";
+      if (th)  th.style.display = "none";
+      btn.textContent = "Show Dealer Net";
+      btn.style.background = "#102a10";
+      btn.style.borderColor = "#205a20";
+      btn.style.color = "#60c060";
+    }
+  });
+
+  updateButtonStates();
+  render(getFiltered());
+};
+</script>
+</body>
+</html>
