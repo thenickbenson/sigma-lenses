@@ -89,9 +89,6 @@ table.hide-net th:nth-child(6),
 table.hide-net td:nth-child(6) { display: none; }
 .sig-link { display:inline-flex; align-items:center; gap:3px; font-size:10px; color:#4b5563; text-decoration:none; border:1px solid #2a2f38; border-radius:4px; padding:3px 7px; -webkit-tap-highlight-color:transparent; white-space:nowrap; }
 .ver-card { position: relative; cursor: pointer; }
-.ver-card .ver-tooltip { display: none; position: absolute; right: 0; top: 110%; background: #141720; border: 1px solid #2a2f38; border-radius: 7px; padding: 10px 14px; z-index: 999; min-width: 260px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-.ver-card:hover .ver-tooltip,
-.ver-card.tip-open .ver-tooltip { display: block; }
 .ver-tooltip .ver-title { font-size: 11px; font-weight: 700; color: #d1d8e4; margin-bottom: 8px; letter-spacing: 0.3px; }
 .ver-tooltip ul { list-style: none; padding: 0; margin: 0; }
 .ver-tooltip ul li { font-size: 10px; color: #9ba3af; padding: 3px 0; border-bottom: 1px solid #1f2430; display: flex; align-items: flex-start; gap: 6px; }
@@ -112,24 +109,24 @@ table.hide-net td:nth-child(6) { display: none; }
   <div class="stat-card ver-card" id="ver-card">
     <div class="lbl">Version</div>
     <div class="val">v1.9</div>
-    <div class="ver-tooltip" id="ver-tooltip">
-      <div class="ver-title">v1.9 — What's New &nbsp;<span style="font-size:10px;opacity:0.5;">(tap to close)</span></div>
-      <ul>
-        <li>Filter by mount using the new Mount dropdown</li>
-        <li>Weight column added — tap or hover to see lbs conversion</li>
-        <li>Search by filter size (e.g. type "77mm" to see all matching lenses)</li>
-        <li>Tap any row to highlight it while scrolling</li>
-        <li>OS column now shows "OS" instead of "Y"</li>
-        <li>Total lens count stat cards removed from header</li>
-        <li>"L" updated to "L-Mount" throughout</li>
-        <li>"Page" column renamed to "Product Page"</li>
-        <li>Accessories column tooltip on hover/tap for Cameras</li>
-        <li>Astro search tags added to 28+ lenses</li>
-        <li>"astrophoto" tag renamed to "astro"</li>
-        <li>"contemporary" tag added to all I-series lenses</li>
-      </ul>
-    </div>
   </div>
+</div>
+<div id="ver-tooltip" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#141720; border:1px solid #2a2f38; border-radius:7px; padding:10px 14px; z-index:9999; min-width:260px; max-width:90vw; box-shadow:0 4px 20px rgba(0,0,0,0.7);">
+  <div class="ver-title">v1.9 — What's New &nbsp;<span style="font-size:10px;opacity:0.5;">(tap to close)</span></div>
+  <ul>
+    <li>Filter by mount using the new Mount dropdown</li>
+    <li>Weight column added — tap or hover to see lbs conversion</li>
+    <li>Search by filter size (e.g. type "77mm" to see all matching lenses)</li>
+    <li>Tap any row to highlight it while scrolling</li>
+    <li>OS column now shows "OS" instead of "Y"</li>
+    <li>Total lens count stat cards removed from header</li>
+    <li>"L" updated to "L-Mount" throughout</li>
+    <li>"Page" column renamed to "Product Page"</li>
+    <li>Accessories column tooltip on hover/tap for Cameras</li>
+    <li>Astro search tags added to 28+ lenses</li>
+    <li>"astrophoto" tag renamed to "astro"</li>
+    <li>"contemporary" tag added to all I-series lenses</li>
+  </ul>
 </div>
 <div class="controls">
   <input type="search" class="search-box" id="search" placeholder="Search..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
@@ -635,39 +632,20 @@ window.onload = function() {
 
   var verCard = document.getElementById("ver-card");
   var verTooltip = document.getElementById("ver-tooltip");
-  var verClosing = false;
 
-  verTooltip.addEventListener("touchend", function(e) {
-    verClosing = true;
-    verCard.classList.remove("tip-open");
+  verCard.addEventListener("click", function(e) {
+    var isOpen = verTooltip.style.display === "block";
+    verTooltip.style.display = isOpen ? "none" : "block";
     e.stopPropagation();
-    e.preventDefault();
-    setTimeout(function() { verClosing = false; }, 300);
   });
 
   verTooltip.addEventListener("click", function(e) {
-    e.stopPropagation();
-  });
-
-  verCard.addEventListener("touchend", function(e) {
-    if (verClosing) return;
-    verCard.classList.toggle("tip-open");
-    e.stopPropagation();
-    e.preventDefault();
-  });
-
-  verCard.addEventListener("click", function(e) {
-    if (verClosing) return;
-    verCard.classList.toggle("tip-open");
+    verTooltip.style.display = "none";
     e.stopPropagation();
   });
 
   document.addEventListener("click", function() {
-    verCard.classList.remove("tip-open");
-  });
-
-  document.addEventListener("touchend", function() {
-    verCard.classList.remove("tip-open");
+    verTooltip.style.display = "none";
   });
 
   updateButtonStates();
