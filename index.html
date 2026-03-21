@@ -31,7 +31,7 @@ h1 { font-family: 'SigmaSerif', serif; font-size: 22px; font-weight: normal; col
 .table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid #1f2430; }
 table { border-collapse: collapse; font-size: 11px; width: max-content; min-width: 100%; }
 thead tr { background: #141720; }
-th { padding: 8px 10px; text-align: left; font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #4b5563; border-bottom: 1px solid #1f2430; white-space: nowrap; }
+th { position: sticky; top: 0; z-index: 10; padding: 8px 10px; text-align: left; font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #4b5563; border-bottom: 1px solid #1f2430; white-space: nowrap; background: #141720; }
 tbody tr { border-bottom: 1px solid #161a22; cursor: pointer; }
 tbody tr.row-selected { background: #2a1e08 !important; outline: 1px solid #c08020; outline-offset: -1px; }
 tbody tr.row-selected td { color: #f5dfa0 !important; }
@@ -74,6 +74,10 @@ td { padding: 6px 10px; vertical-align: middle; white-space: nowrap; }
 .m-dual { font-size:9px; padding:2px 5px; border-radius:3px; background:#1a1040; color:#a07af8; border:1px solid #3a2070; }
 .m-stm  { font-size:9px; padding:2px 5px; border-radius:3px; background:#1a2810; color:#6ec26a; border:1px solid #2e5028; }
 .m-hsm  { font-size:9px; padding:2px 5px; border-radius:3px; background:#302010; color:#e0904a; border:1px solid #5a3a1a; }
+.wt-cell { color: #9ba3af; font-size: 10px; position: relative; cursor: default; white-space: nowrap; }
+.wt-cell:after { content: attr(data-tip); display: none; position: absolute; left: 0; top: 120%; background: #1a1d22; color: #c0c8d8; border: 1px solid #2a2f38; border-radius: 5px; padding: 4px 8px; font-size: 10px; white-space: nowrap; z-index: 99; }
+.wt-cell:hover:after { display: block; }
+.wt-cell.tip-open:after { display: block; }
 .os-y { color:#6ec26a; }
 .os-n { color:#2a3040; }
 .tag     { display:inline-block; font-size:9px; background:#1c2030; color:#4b5563; border-radius:3px; padding:1px 4px; margin:1px; }
@@ -102,7 +106,7 @@ table.hide-net td:nth-child(6) { display: none; }
 <h1>Sigma Technical &amp; Sales Reference Guide</h1>
 <p class="subtitle">Mirrorless (DG DN / DC DN) &amp; DSLR (DG HSM / DC HSM) Lenses, Cameras, and Accessories</p>
 <div class="stats-row">
-  <div class="stat-card"><div class="lbl">Last Updated</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 18, 2026</div></div>
+  <div class="stat-card"><div class="lbl">Last Updated</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 20, 2026</div></div>
   <div class="stat-card"><div class="lbl">Current Instant Savings Program</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 2 - Mar 29, 2026</div></div>
   
   <div class="stat-card ver-card" onclick="this.classList.toggle('tip-open')">
@@ -111,13 +115,16 @@ table.hide-net td:nth-child(6) { display: none; }
     <div class="ver-tooltip">
       <div class="ver-title">v1.9 — What's New</div>
       <ul>
+        <li>Filter by mount using the new Mount dropdown</li>
+        <li>Weight column added — tap or hover to see lbs conversion</li>
+        <li>Search by filter size (e.g. type "77mm" to see all matching lenses)</li>
+        <li>Column headers now stay visible while scrolling</li>
         <li>Tap any row to highlight it while scrolling</li>
-        <li>Filter sizes above 72mm no longer highlighted in orange to eliminate any confusion</li>
         <li>OS column now shows "OS" instead of "Y"</li>
         <li>Total lens count stat cards removed from header</li>
         <li>"L" updated to "L-Mount" throughout</li>
         <li>"Page" column renamed to "Product Page"</li>
-        <li>Accessories column tooltip on hover/tap</li>
+        <li>Accessories column tooltip on hover/tap for Cameras</li>
         <li>Astro search tags added to 28+ lenses</li>
         <li>"astrophoto" tag renamed to "astro"</li>
         <li>"contemporary" tag added to all I-series lenses</li>
@@ -151,6 +158,20 @@ table.hide-net td:nth-child(6) { display: none; }
       <option value="map">Sort: MAP price low to high</option>
       <option value="net">Sort: Dealer net low to high</option>
     </select>
+    <select class="sort-select" id="mount-sel">
+      <option value="">Mount: All</option>
+      <option value="Sony E">Sony E</option>
+      <option value="L-Mount">L-Mount</option>
+      <option value="Canon RF">Canon RF</option>
+      <option value="Canon EF">Canon EF</option>
+      <option value="Fuji X">Fuji X</option>
+      <option value="Nikon F">Nikon F</option>
+      <option value="Nikon Z">Nikon Z</option>
+      <option value="MFT">MFT</option>
+      <option value="Canon M">Canon M</option>
+      <option value="Sigma">Sigma</option>
+      <option value="Pentax">Pentax</option>
+    </select>
     <span class="count" id="cnt"></span>
   </div>
 </div>
@@ -159,7 +180,7 @@ table.hide-net td:nth-child(6) { display: none; }
 <thead><tr>
   <th>Code</th><th>Category</th><th>Lens / Product</th><th>Line</th>
   <th>MAP</th><th id="th-net">Dealer Net</th><th>Mounts</th><th>Filter</th>
-  <th>AF Motor</th><th>OS</th><th>Accessories Included</th><th>Notes</th><th>Product Page</th>
+  <th>AF Motor</th><th>OS</th><th>Weight</th><th>Accessories Included</th><th>Notes</th><th>Product Page</th>
 </tr></thead>
 <tbody id="tbody"></tbody>
 </table>
@@ -174,6 +195,10 @@ table.hide-net td:nth-child(6) { display: none; }
   <span><span class="leg-dot" style="background:#504a10"></span>Camera</span>
   <span><span class="leg-dot" style="background:#105050"></span>Accessory</span>
 </div>
+<div style="margin-top:14px; font-family:'SigmaSans', sans-serif; font-size:11px; color:#4b5563; line-height:1.6;">
+  Have feedback, found an error, or want to suggest an improvement? <a href="https://forms.gle/y3aXvXCFNwZfQ2Wh7" target="_blank" style="color:#4f6ef7; text-decoration:none; border-bottom:1px solid #2a3d80;">Let us know.</a>
+</div>
+
 <script>
 
 var BASE = "https://www.sigma-global.com/en/lenses/";
@@ -191,86 +216,86 @@ var REBATES = {
 };
 
 var L = [
-["213","mff","14-24mm F2.8 DG DN","Art","zoom",14,24,1299,1299,"Sony E, L-Mount","Gel","HLA",0,"Cover Cap, Case","no-front-filter,astro","a019_14_24_28/"],
-["206","mff","16-28mm F2.8 DG DN","Contemporary","zoom",16,28,989,849,"Sony E, L-Mount","72mm","HLA",0,"Hood","compact UWA zoom,astro","c022_16_28_28/"],
-["796","mff","20-200mm F3.5-6.3 DG","Contemporary","zoom",20,200,999,869,"Sony E, L-Mount","72mm","HLA",0,"Hood, Pouch","world1 20mm 10x zoom","c025_20_200_35_63/"],
-["57A","mff","24-70mm F2.8 DG DN II","Art","zoom",24,70,1319,1139,"Sony E, L-Mount","82mm","HLA",0,"Hood, Case","aperture-ring","a024_24_70_28_ii/"],
-["612","mff","28-45mm F1.8 DG DN","Art","zoom",28,45,1489,1269,"Sony E, L-Mount","82mm","HLA",0,"Hood, Case","world1 F1.8 FF zoom,aperture-ring,astro","a024_28_45_18/"],
-["592","mff","28-70mm F2.8 DG DN","Contemporary","zoom",28,70,989,839,"Sony E, L-Mount","67mm","HLA",0,"Hood","","c021_28_70_28/"],
-["636","mff","28-105mm F2.8 DG DN","Art","zoom",28,105,1649,1419,"Sony E, L-Mount","82mm","HLA",0,"Hood, Case","constant F2.8","a024_28_105_28/"],
-["732","mff","60-600mm F4.5-6.3 DG DN OS","Sports","zoom",60,600,2199,1929,"Sony E, L-Mount","105mm","HLA",1,"Hood","OS,10x zoom","s023_60_600_45_63/"],
-["591","mff","70-200mm F2.8 DG DN OS","Sports","zoom",70,200,1649,1489,"Sony E, L-Mount","77mm","HLA",1,"Hood, Case","OS2,aperture-ring","s023_70_200_28/"],
-["750","mff","100-400mm F5-6.3 DG DN OS","Contemporary","zoom",100,400,1049,899,"Sony E, L-Mount, Fuji X","67mm","HLA",1,"Hood, Cover","OS","c020_100_400_5_63/"],
-["747","mff","150-600mm F5-6.3 DG DN OS","Sports","zoom",150,600,1649,1399,"Sony E, L-Mount","95mm","HLA",1,"Hood, Cover Cap, Case","OS,wildlife","s021_150_600_5_63/"],
-["598","mff","300-600mm F4 DG OS","Sports","zoom",300,600,6599,5829,"Sony E, L-Mount","Rear","HLA",1,"Hood, Tripod Socket, Cover Cap, Case","OS2,super-tele","s025_300_600_4/"],
-["45P","mff","14mm F1.4 DG","Art","prime",14,14,1839,1559,"Sony E, L-Mount","Gel","HLA",0,"Cover Cap, Tripod Socket, Protective Cover, Pouch","world1 14mm F1.4,astro","a023_14_14_re/"],
-["478","mff","15mm F1.4 DG DN Fisheye","Art","prime",15,15,2199,1939,"Sony E, L-Mount","Gel","HLA",0,"Cover Cap, Case","fisheye,world1,astro","a024_15_14/"],
-["414","mff","20mm F1.4 DG DN","Art","prime",20,20,989,859,"Sony E, L-Mount","82mm","HLA",0,"Hood, Case","astro","a022_20_14/"],
-["405","mff","24mm F1.4 DG DN","Art","prime",24,24,879,789,"Sony E, L-Mount","72mm","HLA",0,"Hood, Case","astro","a022_24_14/"],
-["341","mff","35mm F1.2 DG DN","Art","prime",35,35,1649,1379,"L-Mount","82mm","DualHLA",0,"Hood, Case","L-mount only,astro","a019_35_12/"],
-["370","mff","35mm F1.2 DG II","Art","prime",35,35,1549,1399,"Sony E, L-Mount","72mm","DualHLA",0,"Hood, Pouch","world1,astro","a025_35_12/"],
-["303","mff","35mm F1.4 DG DN","Art","prime",35,35,989,869,"Sony E, L-Mount","67mm","HLA",0,"Hood, Case","astro","a021_35_14/"],
-["304","mff","35mm F1.4 DG II","Art","prime",35,35,1059,929,"Sony E, L-Mount","67mm","HLA",0,"Hood, Pouch","new,astro","a026_35_14/"],
-["316","mff","50mm F1.2 DG DN","Art","prime",50,50,1539,1349,"Sony E, L-Mount","72mm","DualHLA",0,"Hood, Case","13-blade","a024_50_12/"],
-["315","mff","50mm F1.4 DG DN","Art","prime",50,50,939,839,"Sony E, L-Mount","72mm","HLA",0,"Hood","","a023_50_14/"],
-["322","mff","85mm F1.4 DG DN","Art","prime",85,85,1319,1099,"Sony E, L-Mount","77mm","HLA",0,"Hood","","a020_85_14/"],
-["260","mff","105mm F2.8 DG DN Macro","Art","prime",105,105,879,769,"Sony E, L-Mount","62mm","HLA",0,"Hood","macro","a020_105_28/"],
-["241","mff","135mm F1.4 DG","Art","prime",135,135,1899,1709,"Sony E, L-Mount","105mm","DualHLA",0,"Hood, Tripod Socket, Protective Cover, Pouch","world1,portrait","a025_135_14/"],
-["227","mff","200mm F2 DG OS","Sports","prime",200,200,3299,2879,"Sony E, L-Mount","105mm","HLA",1,"Hood, Tripod Socket, Pouch","OS2","s025_200_2/"],
-["186","mff","500mm F5.6 DG DN OS","Sports","prime",500,500,3299,2919,"Sony E, L-Mount","95mm","HLA",1,"Hood, Case","OS2,super-tele","s024_500_56/"],
-["41B","mis","17mm F4 DG II (Black)","Contemporary","prime",17,17,659,559,"Sony E, L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,contemporary","c023_17_4_re/"],
-["41S","mis","17mm F4 DG II (Silver)","Contemporary","prime",17,17,659,559,"L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver,contemporary","c023_17_4_re/"],
-["49B","mis","20mm F2 DG II (Black)","Contemporary","prime",20,20,769,649,"Sony E, L-Mount","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,astro,contemporary","c022_20_2_re/"],
-["49S","mis","20mm F2 DG II (Silver)","Contemporary","prime",20,20,769,649,"L-Mount","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver,astro,contemporary","c022_20_2_re/"],
-["4B3","mis","24mm F2 DG II (Black)","Contemporary","prime",24,24,719,619,"Sony E, L-Mount","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,astro,contemporary","c021_24_2_re/"],
-["4S3","mis","24mm F2 DG II (Silver)","Contemporary","prime",24,24,719,619,"L-Mount","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver,astro,contemporary","c021_24_2_re/"],
-["4B4","mis","24mm F3.5 DG II (Black)","Contemporary","prime",24,24,619,519,"Sony E, L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,macro-close,contemporary","c021_24_35_re/"],
-["4S4","mis","24mm F3.5 DG II (Silver)","Contemporary","prime",24,24,619,519,"L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,macro-close,silver,contemporary","c021_24_35_re/"],
-["3B7","mis","35mm F2 DG II (Black)","Contemporary","prime",35,35,719,599,"Sony E, L-Mount","58mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,astro,contemporary","c020_35_2_re/"],
-["3S7","mis","35mm F2 DG II (Silver)","Contemporary","prime",35,35,719,599,"L-Mount","58mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver,astro,contemporary","c020_35_2_re/"],
-["36B","mis","45mm F2.8 DG II (Black)","Contemporary","prime",45,45,619,519,"Sony E, L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,pancake,contemporary","c019_45_28_re/"],
-["36S","mis","45mm F2.8 DG II (Silver)","Contemporary","prime",45,45,619,519,"L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,pancake,silver,contemporary","c019_45_28_re/"],
-["31B","mis","50mm F2 DG II (Black)","Contemporary","prime",50,50,719,599,"Sony E, L-Mount","58mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,contemporary","c023_50_2_re/"],
-["31S","mis","50mm F2 DG II (Silver)","Contemporary","prime",50,50,719,599,"L-Mount","58mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver,contemporary","c023_50_2_re/"],
-["3B3","mis","65mm F2 DG II (Black)","Contemporary","prime",65,65,769,649,"Sony E, L-Mount","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,contemporary","c020_65_2_re/"],
-["3S3","mis","65mm F2 DG II (Silver)","Contemporary","prime",65,65,769,649,"L-Mount","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver,contemporary","c020_65_2_re/"],
-["26B","mis","90mm F2.8 DG II (Black)","Contemporary","prime",90,90,719,619,"Sony E, L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,contemporary","c021_90_28_re/"],
-["26S","mis","90mm F2.8 DG II (Silver)","Contemporary","prime",90,90,719,619,"L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver,contemporary","c021_90_28_re/"],
-["207","mapc","10-18mm F2.8 DC DN","Contemporary","zoom",10,18,729,639,"Sony E, L-Mount, RF, Fuji X","67mm","STM",0,"Hood","astro","c023_10_18_28/"],
-["887","mapc","16-300mm F3.5-6.7 DC OS","Contemporary","zoom",16,300,769,689,"Sony E, L-Mount, RF, Fuji X","67mm","HLA",1,"Hood, Pouch","world1 18.8x zoom,OS,1:2 macro","c025_16_300_35_67/"],
-["214","mapc","17-40mm F1.8 DC","Art","zoom",17,40,919,799,"Sony E, L-Mount, RF, Fuji X","67mm","HLA",0,"Hood, Pouch","world1 F1.8 APS-C zoom,aperture-ring,astro","a025_17_40_18/"],
-["585","mapc","18-50mm F2.8 DC DN","Contemporary","zoom",18,50,659,549,"Sony E, L-Mount, RF, Fuji X","55mm","STM",0,"Hood","","c021_18_50_28/"],
-["416","mapc","12mm F1.4 DC","Contemporary","prime",12,12,629,549,"Sony E, RF, Fuji X","62mm","STM",0,"Hood, Pouch","world1 12mm F1.4 APS-C,aperture-ring,new,astro","c025_12_14/"],
-["406","mapc","15mm F1.4 DC","Contemporary","prime",15,15,579,499,"Sony E, RF, Fuji X","58mm","STM",0,"Hood, Pouch","new,aperture-ring,astro","c026_15_14/"],
-["402","mapc","16mm F1.4 DC DN","Contemporary","prime",16,16,539,469,"Sony E, MFT, Canon M, L-Mount, RF, Fuji X","67mm","STM",0,"Hood","astro","c017_16_14/"],
-["348","mapc","23mm F1.4 DC DN","Contemporary","prime",23,23,659,549,"Sony E, L-Mount, RF, Fuji X","52mm","STM",0,"Hood","astro","c023_23_14/"],
-["302","mapc","30mm F1.4 DC DN","Contemporary","prime",30,30,419,349,"Sony E, MFT, Canon M, L-Mount, RF, Fuji X, Nikon Z","52mm","STM",0,"Hood","","c016_30_14/"],
-["351","mapc","56mm F1.4 DC DN","Contemporary","prime",56,56,579,479,"Sony E, MFT, Canon M, L-Mount, RF, Fuji X, Nikon Z","55mm","STM",0,"Hood","portrait tele","c018_56_14/"],
-["212","dff","14-24mm F2.8 DG HSM","Art","zoom",14,24,1429,1189,"Nikon F, Sigma","Gel","HSM",0,"Cover Cap, Case","no-front-filter,astro","a018_14_24_28/"],
-["576","dff","24-70mm F2.8 DG OS HSM","Art","zoom",24,70,1429,1219,"Canon EF, Nikon F, Sigma","82mm","HSM",1,"Perfect Hood, Case","OS","a017_24_70_28/"],
-["730","dff","60-600mm F4.5-6.3 DG OS HSM","Sports","zoom",60,600,2199,1869,"Sigma","105mm","HSM",1,"Perfect Hood, Case","OS,10x zoom","s018_60_600_45_63/"],
-["590","dff","70-200mm F2.8 DG OS HSM","Sports","zoom",70,200,1649,1379,"Canon EF, Sigma","82mm","HSM",1,"Perfect Hood, Case","OS","s016_70_200_28/"],
-["401","dff","24mm F1.4 DG HSM","Art","prime",24,24,939,789,"L-Mount","77mm","HSM",0,"Hood, Case","astro","a015_24_14/"],
-["441","dff","28mm F1.4 DG HSM","Art","prime",28,28,879,809,"Nikon F, Sony E, L-Mount","77mm","HSM",0,"Hood, Case","astro","a019_28_14/"],
-["340","dff","35mm F1.4 DG HSM","Art","prime",35,35,989,869,"Nikon F, Pentax, Sigma","67mm","HSM",0,"Perfect Hood, Case","astro","a013_35_14/"],
-["311","dff","50mm F1.4 DG HSM","Art","prime",50,50,1049,869,"Nikon F, L-Mount","77mm","HSM",0,"Perfect Hood, Case","","a014_50_14/"],
-["321","dff","85mm F1.4 DG HSM","Art","prime",85,85,1319,1099,"Nikon F, Sigma","86mm","HSM",0,"Perfect Hood, Case","","a016_85_14/"],
-["185","dff","500mm F4.0 DG OS HSM","Sports","prime",500,500,6599,5829,"Sigma","Rear","HSM",1,"Perfect Hood, Case","OS,super-tele","s013_500_4/"],
-["301","dapc","30mm F1.4 DC HSM","Art","prime",30,30,549,489,"Nikon F","62mm","HSM",0,"Perfect Hood, Case","","a013_30_14/"],
-["210","dapc","18-35mm F1.8 DC HSM","Art","zoom",18,35,879,749,"Nikon F","72mm","HSM",0,"Perfect Hood, Case","world1 F1.8 zoom,astro","a013_18_35_18/"],
-["693","dapc","50-100mm F1.8 DC HSM","Art","zoom",50,100,1209,1039,"Nikon F, Sigma","82mm","HSM",0,"Perfect Hood, Case","world1 F1.8 tele zoom","a016_50_100_18/"],
-["C46900","cam","BF Camera (Black)","Camera","body",0,0,2199,1969,"L-Mount","--","--",0,"Body Cap, Battery BP-51, Hot Shoe, USB-C Adapter, USB Cable, Strap","","fp/"],
-["C47900","cam","BF Camera (Silver)","Camera","body",0,0,2199,1969,"L-Mount","--","--",0,"Body Cap, Battery BP-51, Hot Shoe, USB-C Adapter, USB Cable, Strap","","fp/"],
-["C44900","cam","fp L Digital Camera","Camera","body",0,0,2749,2319,"L-Mount","--","--",0,"Metal Body Cap, Battery BP-81, Start Guide","","fpl/"],
-["1H900","cam","fp L + EVF-11 Bundle","Camera","bundle",0,0,3299,2749,"L-Mount","--","--",0,"Body Cap, Battery BP-81, EVF-11, Start Guide","bundle","fpl/"],
-["89E965","acc","MC-11 Converter (Canon EF SGV)","Accessory","converter",0,0,279,229,"Sony E","--","--",0,"USB Cord","Canon EF to Sony E","mc-11/"],
-["89S965","acc","MC-11 Converter (Sigma SGV)","Accessory","converter",0,0,279,229,"Sony E","--","--",0,"USB Cord","Sigma to Sony E","mc-11/"],
-["89S969","acc","MC-21 Converter (Sigma SGV)","Accessory","converter",0,0,189,139,"L-Mount","--","--",0,"","Sigma to L-Mount","mc-21/"],
-["878","acc","USB Dock (SGV Lenses)","Accessory","dock",0,0,65,54,"Canon EF, Nikon F, Sony A, Pentax, Sigma, L-Mount, Canon M","--","--",0,"USB Cord","lens calibration","usb-dock/"],
-["825","acc","1.4x Teleconverter TC-1411","Accessory","teleconverter",0,0,449,369,"L-Mount","--","--",0,"","1.4x L-mount SGV lenses","tc-1411/"],
-["826","acc","2.0x Teleconverter TC-2011","Accessory","teleconverter",0,0,479,399,"L-Mount","--","--",0,"","2.0x L-mount SGV lenses","tc-2011/"],
-["879","acc","1.4x Teleconverter TC-1401","Accessory","teleconverter",0,0,389,319,"Canon EF, Nikon F, Sigma","--","--",0,"Case","1.4x DSLR SGV lenses","tc-1401/"],
-["870","acc","2.0x Teleconverter TC-2001","Accessory","teleconverter",0,0,449,389,"Canon EF, Nikon F, Sigma","--","--",0,"Case","2.0x DSLR SGV lenses","tc-2001/"]
+["213","mff","14-24mm F2.8 DG DN","Art","zoom",14,24,1299,1299,"Sony E, L-Mount","Gel","HLA",0,"Cover Cap, Case","no-front-filter,astro","a019_14_24_28/",28.0],
+["206","mff","16-28mm F2.8 DG DN","Contemporary","zoom",16,28,989,849,"Sony E, L-Mount","72mm","HLA",0,"Hood","compact UWA zoom,astro","c022_16_28_28/",15.9],
+["796","mff","20-200mm F3.5-6.3 DG","Contemporary","zoom",20,200,999,869,"Sony E, L-Mount","72mm","HLA",0,"Hood, Pouch","world1 20mm 10x zoom","c025_20_200_35_63/",19.4],
+["57A","mff","24-70mm F2.8 DG DN II","Art","zoom",24,70,1319,1139,"Sony E, L-Mount","82mm","HLA",0,"Hood, Case","aperture-ring","a024_24_70_28_ii/",26.3],
+["612","mff","28-45mm F1.8 DG DN","Art","zoom",28,45,1489,1269,"Sony E, L-Mount","82mm","HLA",0,"Hood, Case","world1 F1.8 FF zoom,aperture-ring,astro","a024_28_45_18/",33.9],
+["592","mff","28-70mm F2.8 DG DN","Contemporary","zoom",28,70,989,839,"Sony E, L-Mount","67mm","HLA",0,"Hood","","c021_28_70_28/",16.6],
+["636","mff","28-105mm F2.8 DG DN","Art","zoom",28,105,1649,1419,"Sony E, L-Mount","82mm","HLA",0,"Hood, Case","constant F2.8","a024_28_105_28/",35.1],
+["732","mff","60-600mm F4.5-6.3 DG DN OS","Sports","zoom",60,600,2199,1929,"Sony E, L-Mount","105mm","HLA",1,"Hood","OS,10x zoom","s023_60_600_45_63/",88.0],
+["591","mff","70-200mm F2.8 DG DN OS","Sports","zoom",70,200,1649,1489,"Sony E, L-Mount","77mm","HLA",1,"Hood, Case","OS2,aperture-ring","s023_70_200_28/",47.4],
+["750","mff","100-400mm F5-6.3 DG DN OS","Contemporary","zoom",100,400,1049,899,"Sony E, L-Mount, Fuji X","67mm","HLA",1,"Hood, Cover","OS","c020_100_400_5_63/",40.0],
+["747","mff","150-600mm F5-6.3 DG DN OS","Sports","zoom",150,600,1649,1399,"Sony E, L-Mount","95mm","HLA",1,"Hood, Cover Cap, Case","OS,wildlife","s021_150_600_5_63/",74.1],
+["598","mff","300-600mm F4 DG OS","Sports","zoom",300,600,6599,5829,"Sony E, L-Mount","Rear","HLA",1,"Hood, Tripod Socket, Cover Cap, Case","OS2,super-tele","s025_300_600_4/",140.6],
+["45P","mff","14mm F1.4 DG","Art","prime",14,14,1839,1559,"Sony E, L-Mount","Gel","HLA",0,"Cover Cap, Tripod Socket, Protective Cover, Pouch","world1 14mm F1.4,astro","a023_14_14_re/",41.3],
+["478","mff","15mm F1.4 DG DN Fisheye","Art","prime",15,15,2199,1939,"Sony E, L-Mount","Gel","HLA",0,"Cover Cap, Case","fisheye,world1,astro","a024_15_14/",48.0],
+["414","mff","20mm F1.4 DG DN","Art","prime",20,20,989,859,"Sony E, L-Mount","82mm","HLA",0,"Hood, Case","astro","a022_20_14/",22.4],
+["405","mff","24mm F1.4 DG DN","Art","prime",24,24,879,789,"Sony E, L-Mount","72mm","HLA",0,"Hood, Case","astro","a022_24_14/",18.3],
+["341","mff","35mm F1.2 DG DN","Art","prime",35,35,1649,1379,"L-Mount","82mm","DualHLA",0,"Hood, Case","L-mount only,astro","a019_35_12/",38.4],
+["370","mff","35mm F1.2 DG II","Art","prime",35,35,1549,1399,"Sony E, L-Mount","72mm","DualHLA",0,"Hood, Pouch","world1,astro","a025_35_12/",26.6],
+["303","mff","35mm F1.4 DG DN","Art","prime",35,35,989,869,"Sony E, L-Mount","67mm","HLA",0,"Hood, Case","astro","a021_35_14/",22.8],
+["304","mff","35mm F1.4 DG II","Art","prime",35,35,1059,929,"Sony E, L-Mount","67mm","HLA",0,"Hood, Pouch","new,astro","a026_35_14/",18.7],
+["316","mff","50mm F1.2 DG DN","Art","prime",50,50,1539,1349,"Sony E, L-Mount","72mm","DualHLA",0,"Hood, Case","13-blade","a024_50_12/",26.3],
+["315","mff","50mm F1.4 DG DN","Art","prime",50,50,939,839,"Sony E, L-Mount","72mm","HLA",0,"Hood","","a023_50_14/",23.6],
+["322","mff","85mm F1.4 DG DN","Art","prime",85,85,1319,1099,"Sony E, L-Mount","77mm","HLA",0,"Hood","","a020_85_14/",22.2],
+["260","mff","105mm F2.8 DG DN Macro","Art","prime",105,105,879,769,"Sony E, L-Mount","62mm","HLA",0,"Hood","macro","a020_105_28/",25.2],
+["241","mff","135mm F1.4 DG","Art","prime",135,135,1899,1709,"Sony E, L-Mount","105mm","DualHLA",0,"Hood, Tripod Socket, Protective Cover, Pouch","world1,portrait","a025_135_14/",50.4],
+["227","mff","200mm F2 DG OS","Sports","prime",200,200,3299,2879,"Sony E, L-Mount","105mm","HLA",1,"Hood, Tripod Socket, Pouch","OS2","s025_200_2/",63.5],
+["186","mff","500mm F5.6 DG DN OS","Sports","prime",500,500,3299,2919,"Sony E, L-Mount","95mm","HLA",1,"Hood, Case","OS2,super-tele","s024_500_56/",48.3],
+["41B","mis","17mm F4 DG II (Black)","Contemporary","prime",17,17,659,559,"Sony E, L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,contemporary","c023_17_4_re/",7.9],
+["41S","mis","17mm F4 DG II (Silver)","Contemporary","prime",17,17,659,559,"L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver,contemporary","c023_17_4_re/",7.9],
+["49B","mis","20mm F2 DG II (Black)","Contemporary","prime",20,20,769,649,"Sony E, L-Mount","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,astro,contemporary","c022_20_2_re/",13.1],
+["49S","mis","20mm F2 DG II (Silver)","Contemporary","prime",20,20,769,649,"L-Mount","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver,astro,contemporary","c022_20_2_re/",13.1],
+["4B3","mis","24mm F2 DG II (Black)","Contemporary","prime",24,24,719,619,"Sony E, L-Mount","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,astro,contemporary","c021_24_2_re/",12.9],
+["4S3","mis","24mm F2 DG II (Silver)","Contemporary","prime",24,24,719,619,"L-Mount","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver,astro,contemporary","c021_24_2_re/",12.9],
+["4B4","mis","24mm F3.5 DG II (Black)","Contemporary","prime",24,24,619,519,"Sony E, L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,macro-close,contemporary","c021_24_35_re/",7.9],
+["4S4","mis","24mm F3.5 DG II (Silver)","Contemporary","prime",24,24,619,519,"L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,macro-close,silver,contemporary","c021_24_35_re/",7.9],
+["3B7","mis","35mm F2 DG II (Black)","Contemporary","prime",35,35,719,599,"Sony E, L-Mount","58mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,astro,contemporary","c020_35_2_re/",11.5],
+["3S7","mis","35mm F2 DG II (Silver)","Contemporary","prime",35,35,719,599,"L-Mount","58mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver,astro,contemporary","c020_35_2_re/",11.5],
+["36B","mis","45mm F2.8 DG II (Black)","Contemporary","prime",45,45,619,519,"Sony E, L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,pancake,contemporary","c019_45_28_re/",7.8],
+["36S","mis","45mm F2.8 DG II (Silver)","Contemporary","prime",45,45,619,519,"L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,pancake,silver,contemporary","c019_45_28_re/",7.8],
+["31B","mis","50mm F2 DG II (Black)","Contemporary","prime",50,50,719,599,"Sony E, L-Mount","58mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,contemporary","c023_50_2_re/",12.3],
+["31S","mis","50mm F2 DG II (Silver)","Contemporary","prime",50,50,719,599,"L-Mount","58mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver,contemporary","c023_50_2_re/",12.3],
+["3B3","mis","65mm F2 DG II (Black)","Contemporary","prime",65,65,769,649,"Sony E, L-Mount","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,contemporary","c020_65_2_re/",14.3],
+["3S3","mis","65mm F2 DG II (Silver)","Contemporary","prime",65,65,769,649,"L-Mount","62mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver,contemporary","c020_65_2_re/",14.3],
+["26B","mis","90mm F2.8 DG II (Black)","Contemporary","prime",90,90,719,619,"Sony E, L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,contemporary","c021_90_28_re/",10.4],
+["26S","mis","90mm F2.8 DG II (Silver)","Contemporary","prime",90,90,719,619,"L-Mount","55mm","STM",0,"Hood, Metallic Front Cap","I-series,all-metal,silver,contemporary","c021_90_28_re/",10.4],
+["207","mapc","10-18mm F2.8 DC DN","Contemporary","zoom",10,18,729,639,"Sony E, L-Mount, Canon RF, Fuji X","67mm","STM",0,"Hood","astro","c023_10_18_28/",9.2],
+["887","mapc","16-300mm F3.5-6.7 DC OS","Contemporary","zoom",16,300,769,689,"Sony E, L-Mount, Canon RF, Fuji X","67mm","HLA",1,"Hood, Pouch","world1 18.8x zoom,OS,1:2 macro","c025_16_300_35_67/",21.7],
+["214","mapc","17-40mm F1.8 DC","Art","zoom",17,40,919,799,"Sony E, L-Mount, Canon RF, Fuji X","67mm","HLA",0,"Hood, Pouch","world1 F1.8 APS-C zoom,aperture-ring,astro","a025_17_40_18/",18.9],
+["585","mapc","18-50mm F2.8 DC DN","Contemporary","zoom",18,50,659,549,"Sony E, L-Mount, Canon RF, Fuji X","55mm","STM",0,"Hood","","c021_18_50_28/",10.2],
+["416","mapc","12mm F1.4 DC","Contemporary","prime",12,12,629,549,"Sony E, Canon RF, Fuji X","62mm","STM",0,"Hood, Pouch","world1 12mm F1.4 APS-C,aperture-ring,new,astro","c025_12_14/",7.9],
+["406","mapc","15mm F1.4 DC","Contemporary","prime",15,15,579,499,"Sony E, Canon RF, Fuji X","58mm","STM",0,"Hood, Pouch","new,aperture-ring,astro","c026_15_14/",7.8],
+["402","mapc","16mm F1.4 DC DN","Contemporary","prime",16,16,539,469,"Sony E, MFT, Canon M, L-Mount, Canon RF, Fuji X, Nikon Z","67mm","STM",0,"Hood","astro","c017_16_14/",14.6],
+["348","mapc","23mm F1.4 DC DN","Contemporary","prime",23,23,659,549,"Sony E, L-Mount, Canon RF, Fuji X","52mm","STM",0,"Hood","astro","c023_23_14/",12.0],
+["302","mapc","30mm F1.4 DC DN","Contemporary","prime",30,30,419,349,"Sony E, MFT, Canon M, L-Mount, Canon RF, Fuji X, Nikon Z","52mm","STM",0,"Hood","","c016_30_14/",9.9],
+["351","mapc","56mm F1.4 DC DN","Contemporary","prime",56,56,579,479,"Sony E, MFT, Canon M, L-Mount, Canon RF, Fuji X, Nikon Z","55mm","STM",0,"Hood","portrait tele","c018_56_14/",10.1],
+["212","dff","14-24mm F2.8 DG HSM","Art","zoom",14,24,1429,1189,"Nikon F, Sigma","Gel","HSM",0,"Cover Cap, Case","no-front-filter,astro","a018_14_24_28/",40.6],
+["576","dff","24-70mm F2.8 DG OS HSM","Art","zoom",24,70,1429,1219,"Canon EF, Nikon F, Sigma","82mm","HSM",1,"Perfect Hood, Case","OS","a017_24_70_28/",35.2],
+["730","dff","60-600mm F4.5-6.3 DG OS HSM","Sports","zoom",60,600,2199,1869,"Sigma","105mm","HSM",1,"Perfect Hood, Case","OS,10x zoom","s018_60_600_45_63/",87.3],
+["590","dff","70-200mm F2.8 DG OS HSM","Sports","zoom",70,200,1649,1379,"Canon EF, Sigma","82mm","HSM",1,"Perfect Hood, Case","OS","s016_70_200_28/",58.7],
+["401","dff","24mm F1.4 DG HSM","Art","prime",24,24,939,789,"L-Mount","77mm","HSM",0,"Hood, Case","astro","a015_24_14/",23.5],
+["441","dff","28mm F1.4 DG HSM","Art","prime",28,28,879,809,"Nikon F, Sony E, L-Mount","77mm","HSM",0,"Hood, Case","astro","a019_28_14/",26.8],
+["340","dff","35mm F1.4 DG HSM","Art","prime",35,35,989,869,"Nikon F, Pentax, Sigma","67mm","HSM",0,"Perfect Hood, Case","astro","a013_35_14/",23.5],
+["311","dff","50mm F1.4 DG HSM","Art","prime",50,50,1049,869,"Nikon F, L-Mount","77mm","HSM",0,"Perfect Hood, Case","","a014_50_14/",29.6],
+["321","dff","85mm F1.4 DG HSM","Art","prime",85,85,1319,1099,"Nikon F, Sigma","86mm","HSM",0,"Perfect Hood, Case","","a016_85_14/",39.9],
+["185","dff","500mm F4.0 DG OS HSM","Sports","prime",500,500,6599,5829,"Sigma","Rear","HSM",1,"Perfect Hood, Case","OS,super-tele","s013_500_4/",233.5],
+["301","dapc","30mm F1.4 DC HSM","Art","prime",30,30,549,489,"Nikon F","62mm","HSM",0,"Perfect Hood, Case","","a013_30_14/",17.6],
+["210","dapc","18-35mm F1.8 DC HSM","Art","zoom",18,35,879,749,"Nikon F","72mm","HSM",0,"Perfect Hood, Case","world1 F1.8 zoom,astro","a013_18_35_18/",28.6],
+["693","dapc","50-100mm F1.8 DC HSM","Art","zoom",50,100,1209,1039,"Nikon F, Sigma","82mm","HSM",0,"Perfect Hood, Case","world1 F1.8 tele zoom","a016_50_100_18/",42.6],
+["C46900","cam","BF Camera (Black)","Camera","body",0,0,2199,1969,"L-Mount","--","--",0,"Body Cap, Battery BP-51, Hot Shoe, USB-C Adapter, USB Cable, Strap","","fp/",13.7],
+["C47900","cam","BF Camera (Silver)","Camera","body",0,0,2199,1969,"L-Mount","--","--",0,"Body Cap, Battery BP-51, Hot Shoe, USB-C Adapter, USB Cable, Strap","","fp/",13.7],
+["C44900","cam","fp L Digital Camera","Camera","body",0,0,2749,2319,"L-Mount","--","--",0,"Metal Body Cap, Battery BP-81, Start Guide","","fpl/",13.2],
+["1H900","cam","fp L + EVF-11 Bundle","Camera","bundle",0,0,3299,2749,"L-Mount","--","--",0,"Body Cap, Battery BP-81, EVF-11, Start Guide","bundle","fpl/",13.2],
+["89E965","acc","MC-11 Converter (Canon EF SGV)","Accessory","converter",0,0,279,229,"Sony E","--","--",0,"USB Cord","Canon EF to Sony E","mc-11/",0],
+["89S965","acc","MC-11 Converter (Sigma SGV)","Accessory","converter",0,0,279,229,"Sony E","--","--",0,"USB Cord","Sigma to Sony E","mc-11/",0],
+["89S969","acc","MC-21 Converter (Sigma SGV)","Accessory","converter",0,0,189,139,"L-Mount","--","--",0,"","Sigma to L-Mount","mc-21/",0],
+["878","acc","USB Dock (SGV Lenses)","Accessory","dock",0,0,65,54,"Canon EF, Nikon F, Sony A, Pentax, Sigma, L-Mount, Canon M","--","--",0,"USB Cord","lens calibration","usb-dock/",0],
+["825","acc","1.4x Teleconverter TC-1411","Accessory","teleconverter",0,0,449,369,"L-Mount","--","--",0,"","1.4x L-mount SGV lenses","tc-1411/",0],
+["826","acc","2.0x Teleconverter TC-2011","Accessory","teleconverter",0,0,479,399,"L-Mount","--","--",0,"","2.0x L-mount SGV lenses","tc-2011/",0],
+["879","acc","1.4x Teleconverter TC-1401","Accessory","teleconverter",0,0,389,319,"Canon EF, Nikon F, Sigma","--","--",0,"Case","1.4x DSLR SGV lenses","tc-1401/",0],
+["870","acc","2.0x Teleconverter TC-2001","Accessory","teleconverter",0,0,449,389,"Canon EF, Nikon F, Sigma","--","--",0,"Case","2.0x DSLR SGV lenses","tc-2001/",0]
 ];
 
 var CAT_ORDER = ["mff","mis","mapc","dff","dapc","cam","acc"];
@@ -320,7 +345,7 @@ function lineBadge(l) {
   if (l === "Art")    return '<span class="b-art">Art</span>';
   if (l === "Sports") return '<span class="b-spo">Sports</span>';
   if (l === "Camera" || l === "Accessory") return '<span class="b-other">' + l + '</span>';
-  return '<span class="b-con">Contemp.</span>';
+  return '<span class="b-con">Contemporary</span>';
 }
 function motorChip(af) {
   if (af === "DualHLA") return '<span class="m-dual">Dual HLA</span>';
@@ -371,6 +396,7 @@ var filterC = "";
 var filterD = "";
 var curSort = "cat";
 var curSearch = "";
+var curMount = "";
 
 function matches(l) {
   var c = l[1], line = l[3], type = l[4];
@@ -395,8 +421,10 @@ function matches(l) {
 
   if (filterD === "rebate" && !REBATES[l[0]]) return false;
 
+  if (curMount && l[9].indexOf(curMount) < 0) return false;
+
   if (curSearch) {
-    var hay = (l[0]+" "+l[1]+" "+l[2]+" "+l[3]+" "+l[4]+" "+l[9]+" "+l[14]).toLowerCase();
+    var hay = (l[0]+" "+l[1]+" "+l[2]+" "+l[3]+" "+l[4]+" "+l[9]+" "+l[10]+" "+l[14]).toLowerCase();
     if (hay.indexOf(curSearch) < 0) return false;
   }
   return true;
@@ -461,6 +489,15 @@ function render(data) {
     rows += '<td class="' + filterCls + '">' + l[10] + '</td>';
     rows += '<td>' + mc + '</td>';
     rows += '<td>' + osStr + '</td>';
+    var wtoz = l[16];
+    var wtCell = '';
+    if (wtoz > 0) {
+      var wtlbs = (wtoz / 16).toFixed(2);
+      wtCell = '<td class="wt-cell" data-tip="' + wtlbs + ' lbs" onclick="toggleTip(this)">' + wtoz + ' oz</td>';
+    } else {
+      wtCell = '<td class="wt-cell">--</td>';
+    }
+    rows += wtCell;
     rows += '<td class="acc-cell" data-tip="' + l[13] + '" onclick="toggleTip(this)">' + l[13] + '</td>';
     rows += '<td>' + nt + '</td>';
     rows += '<td><a class="sig-link" href="' + href + '" target="_blank">sigma.com</a></td>';
@@ -585,6 +622,11 @@ window.onload = function() {
     var allRows = document.querySelectorAll("#tbody tr");
     for (var i = 0; i < allRows.length; i++) allRows[i].classList.remove("row-selected");
     if (!wasSelected) row.classList.add("row-selected");
+  });
+
+  document.getElementById("mount-sel").addEventListener("change", function() {
+    curMount = this.value;
+    render(getFiltered());
   });
 
   updateButtonStates();
