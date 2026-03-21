@@ -487,13 +487,7 @@ function render(data) {
     rows += '<td>' + mc + '</td>';
     rows += '<td>' + osStr + '</td>';
     var wtoz = l[16];
-    var wtCell = '';
-    if (wtoz > 0) {
-      var wtlbs = (wtoz / 16).toFixed(2);
-      wtCell = '<td class="wt-cell" data-tip="' + wtlbs + ' lbs" onclick="toggleTip(this)">' + wtoz + ' oz</td>';
-    } else {
-      wtCell = '<td class="wt-cell">--</td>';
-    }
+    var wtCell = wtoz > 0 ? '<td class="wt-cell">' + wtoz + ' oz</td>' : '<td class="wt-cell">--</td>';
     rows += wtCell;
     rows += '<td class="acc-cell" data-tip="' + l[13] + '" onclick="toggleTip(this)">' + l[13] + '</td>';
     rows += '<td>' + nt + '</td>';
