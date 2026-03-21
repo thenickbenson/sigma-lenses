@@ -635,25 +635,38 @@ window.onload = function() {
 
   var verCard = document.getElementById("ver-card");
   var verTooltip = document.getElementById("ver-tooltip");
+  var verClosing = false;
 
-  function openVer(e) {
-    verCard.classList.toggle("tip-open");
-    e.stopPropagation();
-    e.preventDefault();
-  }
-
-  function closeVer(e) {
+  verTooltip.addEventListener("touchend", function(e) {
+    verClosing = true;
     verCard.classList.remove("tip-open");
     e.stopPropagation();
     e.preventDefault();
-  }
+    setTimeout(function() { verClosing = false; }, 300);
+  });
 
-  verCard.addEventListener("click", openVer);
-  verCard.addEventListener("touchend", openVer, {passive: false});
-  verTooltip.addEventListener("click", closeVer);
-  verTooltip.addEventListener("touchend", closeVer, {passive: false});
+  verTooltip.addEventListener("click", function(e) {
+    e.stopPropagation();
+  });
+
+  verCard.addEventListener("touchend", function(e) {
+    if (verClosing) return;
+    verCard.classList.toggle("tip-open");
+    e.stopPropagation();
+    e.preventDefault();
+  });
+
+  verCard.addEventListener("click", function(e) {
+    if (verClosing) return;
+    verCard.classList.toggle("tip-open");
+    e.stopPropagation();
+  });
 
   document.addEventListener("click", function() {
+    verCard.classList.remove("tip-open");
+  });
+
+  document.addEventListener("touchend", function() {
     verCard.classList.remove("tip-open");
   });
 
