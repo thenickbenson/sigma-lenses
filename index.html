@@ -88,7 +88,8 @@ td { padding: 6px 10px; vertical-align: middle; white-space: nowrap; }
 table.hide-net th:nth-child(6),
 table.hide-net td:nth-child(6) { display: none; }
 .sig-link { display:inline-flex; align-items:center; gap:3px; font-size:10px; color:#4b5563; text-decoration:none; border:1px solid #2a2f38; border-radius:4px; padding:3px 7px; -webkit-tap-highlight-color:transparent; white-space:nowrap; }
-.ver-card { position: relative; cursor: pointer; }
+.ver-card { position: relative; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+#ver-tooltip { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .ver-tooltip .ver-title { font-size: 11px; font-weight: 700; color: #d1d8e4; margin-bottom: 8px; letter-spacing: 0.3px; }
 .ver-tooltip ul { list-style: none; padding: 0; margin: 0; }
 .ver-tooltip ul li { font-size: 10px; color: #9ba3af; padding: 3px 0; border-bottom: 1px solid #1f2430; display: flex; align-items: flex-start; gap: 6px; }
@@ -633,16 +634,24 @@ window.onload = function() {
   var verCard = document.getElementById("ver-card");
   var verTooltip = document.getElementById("ver-tooltip");
 
-  verCard.addEventListener("click", function(e) {
+  function toggleVer(e) {
     var isOpen = verTooltip.style.display === "block";
     verTooltip.style.display = isOpen ? "none" : "block";
     e.stopPropagation();
-  });
+  }
 
-  verTooltip.addEventListener("click", function(e) {
+  function closeVer(e) {
     verTooltip.style.display = "none";
     e.stopPropagation();
-  });
+  }
+
+  verCard.addEventListener("click", toggleVer);
+  verCard.addEventListener("touchstart", function(){}, {passive:true});
+  verCard.addEventListener("touchend", function(e){ toggleVer(e); }, {passive:false});
+
+  verTooltip.addEventListener("click", closeVer);
+  verTooltip.addEventListener("touchstart", function(){}, {passive:true});
+  verTooltip.addEventListener("touchend", function(e){ closeVer(e); }, {passive:false});
 
   document.addEventListener("click", function() {
     verTooltip.style.display = "none";
