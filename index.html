@@ -109,10 +109,10 @@ table.hide-net td:nth-child(6) { display: none; }
   <div class="stat-card"><div class="lbl">Last Updated</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 20, 2026</div></div>
   <div class="stat-card"><div class="lbl">Current Instant Savings Program</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 2 - Mar 29, 2026</div></div>
   
-  <div class="stat-card ver-card" id="ver-card" onclick="event.stopPropagation(); this.classList.toggle('tip-open')">
+  <div class="stat-card ver-card" id="ver-card" onclick="var c=document.getElementById('ver-card'); c.classList.toggle('tip-open'); event.stopPropagation();">
     <div class="lbl">Version</div>
     <div class="val">v1.9</div>
-    <div class="ver-tooltip" onclick="event.stopPropagation(); document.getElementById('ver-card').classList.remove('tip-open')">
+    <div class="ver-tooltip" onclick="document.getElementById('ver-card').classList.remove('tip-open'); event.stopPropagation();">
       <div class="ver-title">v1.9 — What's New &nbsp;<span style="font-size:10px;opacity:0.5;">(tap to close)</span></div>
       <ul>
         <li>Filter by mount using the new Mount dropdown</li>
