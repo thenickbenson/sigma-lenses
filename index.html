@@ -109,10 +109,10 @@ table.hide-net td:nth-child(6) { display: none; }
   <div class="stat-card"><div class="lbl">Last Updated</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 20, 2026</div></div>
   <div class="stat-card"><div class="lbl">Current Instant Savings Program</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 2 - Mar 29, 2026</div></div>
   
-  <div class="stat-card ver-card" id="ver-card" onclick="var c=document.getElementById('ver-card'); c.classList.toggle('tip-open'); event.stopPropagation();">
+  <div class="stat-card ver-card" id="ver-card">
     <div class="lbl">Version</div>
     <div class="val">v1.9</div>
-    <div class="ver-tooltip" onclick="document.getElementById('ver-card').classList.remove('tip-open'); event.stopPropagation();">
+    <div class="ver-tooltip" id="ver-tooltip">
       <div class="ver-title">v1.9 — What's New &nbsp;<span style="font-size:10px;opacity:0.5;">(tap to close)</span></div>
       <ul>
         <li>Filter by mount using the new Mount dropdown</li>
@@ -633,8 +633,28 @@ window.onload = function() {
     if (vc) vc.classList.remove("tip-open");
   });
 
+  var verCard = document.getElementById("ver-card");
+  var verTooltip = document.getElementById("ver-tooltip");
+
+  function openVer(e) {
+    verCard.classList.toggle("tip-open");
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  function closeVer(e) {
+    verCard.classList.remove("tip-open");
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  verCard.addEventListener("click", openVer);
+  verCard.addEventListener("touchend", openVer, {passive: false});
+  verTooltip.addEventListener("click", closeVer);
+  verTooltip.addEventListener("touchend", closeVer, {passive: false});
+
   document.addEventListener("click", function() {
-    document.getElementById("ver-card").classList.remove("tip-open");
+    verCard.classList.remove("tip-open");
   });
 
   updateButtonStates();
