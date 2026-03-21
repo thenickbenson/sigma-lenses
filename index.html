@@ -28,10 +28,11 @@ h1 { font-family: 'SigmaSerif', serif; font-size: 22px; font-weight: normal; col
 .sort-wrap { display: flex; align-items: center; gap: 8px; }
 .sort-select { background: #1a1d22; border: 1px solid #2a2f38; border-radius: 6px; color: #9ba3af; padding: 6px 8px; font-size: 11px; outline: none; -webkit-appearance: none; flex: 1; }
 .count { font-size: 11px; color: #4b5563; white-space: nowrap; }
-.table-wrap { width: 100%; overflow-x: auto; overflow-y: auto; max-height: calc(100vh - 220px); -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid #1f2430; overscroll-behavior: contain; }
-table { border-collapse: collapse; font-size: 11px; min-width: 100%; }
+.table-wrap { width: 100%; border-radius: 8px; border: 1px solid #1f2430; }
+.table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; font-size: 11px; width: max-content; min-width: 100%; }
 thead tr { background: #141720; }
-th { position: sticky; top: 0; z-index: 10; padding: 8px 10px; text-align: left; font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #4b5563; border-bottom: 1px solid #1f2430; white-space: nowrap; background: #141720; }
+th { position: sticky; top: 0; z-index: 10; padding: 8px 10px; text-align: left; font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #4b5563; border-bottom: 1px solid #1f2430; white-space: nowrap; background: #141720; box-shadow: 0 1px 0 #1f2430; }
 tbody tr { border-bottom: 1px solid #161a22; cursor: pointer; }
 tbody tr.row-selected { background: #2a1e08 !important; outline: 1px solid #c08020; outline-offset: -1px; }
 tbody tr.row-selected td { color: #f5dfa0 !important; }
@@ -176,6 +177,7 @@ table.hide-net td:nth-child(6) { display: none; }
   </div>
 </div>
 <div class="table-wrap">
+<div class="table-scroll">
 <table>
 <thead><tr>
   <th>Code</th><th>Category</th><th>Lens / Product</th><th>Line</th>
@@ -184,6 +186,7 @@ table.hide-net td:nth-child(6) { display: none; }
 </tr></thead>
 <tbody id="tbody"></tbody>
 </table>
+</div>
 </div>
 <div style="font-size:10px;color:#e07040;margin-top:8px;">* Instant savings program active March 2 - March 29, 2026. Hover or tap price for details.</div>
 <div class="legend">
