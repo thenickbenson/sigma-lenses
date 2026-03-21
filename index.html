@@ -10,7 +10,7 @@
 @font-face { font-family: 'SigmaSerif'; src: url('SigmaSerif-Text.ttf') format('truetype'); font-weight: normal; font-style: normal; }
 @font-face { font-family: 'SigmaSans'; src: url('SigmaSans-Regular.ttf') format('truetype'); font-weight: normal; font-style: normal; }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d0f12; color: #e0e4eb; padding: 16px 12px; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d0f12; color: #e0e4eb; padding: 16px 12px; overflow-x: hidden; overscroll-behavior: none; }
 h1 { font-family: 'SigmaSerif', serif; font-size: 22px; font-weight: normal; color: #f0f3f7; margin-bottom: 2px; }
 .subtitle { font-family: 'SigmaSans', sans-serif; font-size: 11px; color: #6b7280; margin-bottom: 14px; line-height: 1.4; }
 .subtitle { font-size: 11px; color: #6b7280; margin-bottom: 14px; line-height: 1.4; }
@@ -28,7 +28,7 @@ h1 { font-family: 'SigmaSerif', serif; font-size: 22px; font-weight: normal; col
 .sort-wrap { display: flex; align-items: center; gap: 8px; }
 .sort-select { background: #1a1d22; border: 1px solid #2a2f38; border-radius: 6px; color: #9ba3af; padding: 6px 8px; font-size: 11px; outline: none; -webkit-appearance: none; flex: 1; }
 .count { font-size: 11px; color: #4b5563; white-space: nowrap; }
-.table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid #1f2430; overscroll-behavior-x: contain; }
+.table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid #1f2430; overscroll-behavior: contain; }
 table { border-collapse: collapse; font-size: 11px; width: max-content; min-width: 100%; }
 thead tr { background: #141720; }
 th { padding: 8px 10px; text-align: left; font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #4b5563; border-bottom: 1px solid #1f2430; white-space: nowrap; background: #141720; }
@@ -109,11 +109,11 @@ table.hide-net td:nth-child(6) { display: none; }
   <div class="stat-card"><div class="lbl">Last Updated</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 20, 2026</div></div>
   <div class="stat-card"><div class="lbl">Current Instant Savings Program</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 2 - Mar 29, 2026</div></div>
   
-  <div class="stat-card ver-card" onclick="this.classList.toggle('tip-open')">
+  <div class="stat-card ver-card" id="ver-card" onclick="event.stopPropagation(); this.classList.toggle('tip-open')">
     <div class="lbl">Version</div>
     <div class="val">v1.9</div>
-    <div class="ver-tooltip">
-      <div class="ver-title">v1.9 — What's New</div>
+    <div class="ver-tooltip" onclick="event.stopPropagation(); document.getElementById('ver-card').classList.remove('tip-open')">
+      <div class="ver-title">v1.9 — What's New &nbsp;<span style="font-size:10px;opacity:0.5;">(tap to close)</span></div>
       <ul>
         <li>Filter by mount using the new Mount dropdown</li>
         <li>Weight column added — tap or hover to see lbs conversion</li>
@@ -626,6 +626,15 @@ window.onload = function() {
   document.getElementById("mount-sel").addEventListener("change", function() {
     curMount = this.value;
     render(getFiltered());
+  });
+
+  document.addEventListener("click", function() {
+    var vc = document.getElementById("ver-card");
+    if (vc) vc.classList.remove("tip-open");
+  });
+
+  document.addEventListener("click", function() {
+    document.getElementById("ver-card").classList.remove("tip-open");
   });
 
   updateButtonStates();
