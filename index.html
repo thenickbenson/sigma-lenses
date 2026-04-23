@@ -148,6 +148,7 @@ table.hide-net td:nth-child(6) { display: none; }
   </div>
   <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
     <button id="net-toggle" class="filter-btn" style="background:#2a1010;border-color:#5a2020;color:#e06060;">Hide Dealer Net</button>
+    <button id="iseries-toggle" class="filter-btn" style="background:#1a1a10;border-color:#504a10;color:#d4c460;">Hide I-Series</button>
   </div>
   <div class="sort-wrap">
     <select class="sort-select" id="sort-sel">
@@ -405,6 +406,7 @@ var filterD = "";
 var curSort = "cat";
 var curSearch = "";
 var curMount = "";
+var hideISeries = false;
 
 function matches(l) {
   var c = l[1], line = l[3], type = l[4];
@@ -412,6 +414,8 @@ function matches(l) {
   var isDSLR       = (c === "dff" || c === "dapc");
   var isFF         = (c === "mff" || c === "mis" || c === "dff");
   var isAPSC       = (c === "mapc" || c === "dapc");
+
+  if (hideISeries && c === "mis") return false;
 
   if (filterA === "mirrorless"   && !isMirrorless)  return false;
   if (filterA === "dslr"         && !isDSLR)         return false;
@@ -616,6 +620,23 @@ window.onload = function() {
       btn.style.borderColor = "#205a20";
       btn.style.color = "#60c060";
     }
+  });
+
+  document.getElementById("iseries-toggle").addEventListener("click", function() {
+    hideISeries = !hideISeries;
+    var btn = document.getElementById("iseries-toggle");
+    if (hideISeries) {
+      btn.textContent = "Show I-Series";
+      btn.style.background = "#102a10";
+      btn.style.borderColor = "#205a20";
+      btn.style.color = "#60c060";
+    } else {
+      btn.textContent = "Hide I-Series";
+      btn.style.background = "#1a1a10";
+      btn.style.borderColor = "#504a10";
+      btn.style.color = "#d4c460";
+    }
+    render(getFiltered());
   });
 
   document.getElementById("tbody").addEventListener("click", function(e) {
