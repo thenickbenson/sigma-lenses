@@ -103,8 +103,8 @@ table.hide-net td:nth-child(6) { display: none; }
 <h1>Sigma Technical &amp; Sales Reference Guide</h1>
 <p class="subtitle">Mirrorless (DG DN / DC DN) &amp; DSLR (DG HSM / DC HSM) Lenses, Cameras, and Accessories</p>
 <div class="stats-row">
-  <div class="stat-card"><div class="lbl">Last Updated</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 29, 2026</div></div>
-  <div class="stat-card"><div class="lbl">Current Instant Savings Program</div><div class="val" style="font-size:11px;line-height:1.4;">Mar 30 - Apr 26, 2026</div></div>
+  <div class="stat-card"><div class="lbl">Last Updated</div><div class="val" style="font-size:11px;line-height:1.4;">Apr 23, 2026</div></div>
+  <div class="stat-card"><div class="lbl">Current Instant Savings Program</div><div class="val" style="font-size:11px;line-height:1.4;">Apr 27 - May 17, 2026</div></div>
   
   <div class="stat-card ver-card" id="ver-card">
     <div class="lbl">Version</div>
@@ -136,6 +136,7 @@ table.hide-net td:nth-child(6) { display: none; }
     <button class="filter-btn" data-f="dslr">DSLR</button>
     <button class="filter-btn" data-f="ff">Full-Frame</button>
     <button class="filter-btn" data-f="apsc">APS-C</button>
+    <button class="filter-btn" data-f="iseries">I-Series</button>
     <button class="filter-btn" data-f="Art">Art</button>
     <button class="filter-btn" data-f="Contemporary">Contemporary</button>
     <button class="filter-btn" data-f="Sports">Sports</button>
@@ -181,7 +182,7 @@ table.hide-net td:nth-child(6) { display: none; }
 <tbody id="tbody"></tbody>
 </table>
 </div>
-<div style="font-size:10px;color:#e07040;margin-top:8px;">* Instant savings program active March 30 - April 26, 2026. Hover or tap price for details.</div>
+<div style="font-size:10px;color:#e07040;margin-top:8px;">* Instant savings program active April 27 - May 17, 2026. Hover or tap price for details.</div>
 <div class="legend">
   <span><span class="leg-dot" style="background:#1a2550"></span>M FF (DG DN)</span>
   <span><span class="leg-dot" style="background:#2a1a50"></span>I-series</span>
@@ -202,13 +203,24 @@ var BCAM = "https://www.sigma-global.com/en/cameras/";
 var BACC = "https://www.sigma-global.com/en/accessories/";
 // Rebates: code -> {save, now, expires}
 var REBATES = {
-  "612": {save:75,  now:1414, expires:"Apr 26, 2026"},
-  "592": {save:100, now:889,  expires:"Apr 26, 2026"},
-  "750": {save:50,  now:999,  expires:"Apr 26, 2026"},
-  "747": {save:100, now:1549, expires:"Apr 26, 2026"},
-  "207": {save:50,  now:679,  expires:"Apr 26, 2026"},
-  "887": {save:75,  now:694,  expires:"Apr 26, 2026"},
-  "416": {save:50,  now:579,  expires:"Apr 26, 2026"}
+  "585": {save:75,  now:584,  expires:"May 17, 2026"},
+  "416": {save:50,  now:579,  expires:"May 17, 2026"},
+  "302": {save:75,  now:344,  expires:"May 17, 2026"},
+  "351": {save:75,  now:504,  expires:"May 17, 2026"},
+  "206": {save:50,  now:939,  expires:"May 17, 2026"},
+  "612": {save:75,  now:1414, expires:"May 17, 2026"},
+  "592": {save:100, now:889,  expires:"May 17, 2026"},
+  "591": {save:100, now:1549, expires:"May 17, 2026"},
+  "303": {save:120, now:869,  expires:"May 17, 2026"},
+  "315": {save:100, now:839,  expires:"May 17, 2026"},
+  "260": {save:100, now:779,  expires:"May 17, 2026"},
+  "796": {save:100, now:899,  expires:"May 17, 2026"},
+  "57A": {save:100, now:1219, expires:"May 17, 2026"},
+  "750": {save:50,  now:999,  expires:"May 17, 2026"},
+  "207": {save:50,  now:679,  expires:"May 17, 2026"},
+  "887": {save:75,  now:694,  expires:"May 17, 2026"},
+  "747": {save:100, now:1549, expires:"May 17, 2026"},
+  "402": {save:75,  now:464,  expires:"May 17, 2026"}
 };
 
 var L = [
@@ -405,6 +417,7 @@ function matches(l) {
   if (filterA === "dslr"         && !isDSLR)         return false;
   if (filterA === "ff"           && !isFF)            return false;
   if (filterA === "apsc"         && !isAPSC)          return false;
+  if (filterA === "iseries"      && c !== "mis")      return false;
   if (filterA === "cameras"      && c !== "cam")      return false;
   if (filterA === "accessories"  && c !== "acc")      return false;
 
@@ -514,7 +527,7 @@ function render(data) {
 
 // Group definitions - which data-f value belongs to which group
 function groupOf(f) {
-  var A = ["mirrorless","dslr","ff","apsc","cameras","accessories"];
+  var A = ["mirrorless","dslr","ff","apsc","iseries","cameras","accessories"];
   var B = ["Art","Contemporary","Sports"];
   var C = ["prime","zoom"];
   var D = ["rebate"];
