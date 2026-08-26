@@ -103,8 +103,8 @@ table.hide-net td:nth-child(6) { display: none; }
 <h1>Sigma Technical &amp; Sales Reference Guide</h1>
 <p class="subtitle">Mirrorless (DG DN / DC DN) &amp; DSLR (DG HSM / DC HSM) Lenses, Cameras, and Accessories</p>
 <div class="stats-row">
-  <div class="stat-card"><div class="lbl">Last Updated</div><div class="val" style="font-size:11px;line-height:1.4;">Aug 3, 2026</div></div>
-  <div class="stat-card"><div class="lbl">Current Instant Savings Program</div><div class="val" style="font-size:11px;line-height:1.4;">Aug 3 - Aug 30, 2026</div></div>
+  <div class="stat-card"><div class="lbl">Last Updated</div><div class="val" style="font-size:11px;line-height:1.4;">Aug 26, 2026</div></div>
+  <div class="stat-card"><div class="lbl">Current Instant Savings Program</div><div class="val" style="font-size:11px;line-height:1.4;">Aug 31 - Sep 27, 2026</div></div>
   
   <div class="stat-card ver-card" id="ver-card">
     <div class="lbl">Version</div>
@@ -184,7 +184,7 @@ table.hide-net td:nth-child(6) { display: none; }
 <tbody id="tbody"></tbody>
 </table>
 </div>
-<div style="font-size:10px;color:#e07040;margin-top:8px;">* Instant savings program active August 3 - August 30, 2026. Hover or tap price for details.</div>
+<div style="font-size:10px;color:#e07040;margin-top:8px;">* Instant savings program active August 31 - September 27, 2026. Hover or tap price for details.</div>
 <div class="legend">
   <span><span class="leg-dot" style="background:#1a2550"></span>M FF (DG DN)</span>
   <span><span class="leg-dot" style="background:#2a1a50"></span>I-series</span>
@@ -205,15 +205,17 @@ var BCAM = "https://www.sigma-global.com/en/cameras/";
 var BACC = "https://www.sigma-global.com/en/accessories/";
 // Rebates: code -> {save, now, expires}
 var REBATES = {
-  "796": {save:100, now:899,  expires:"Aug 30, 2026"},
-  "612": {save:75,  now:1414, expires:"Aug 30, 2026"},
-  "227": {save:200, now:3099, expires:"Aug 30, 2026"},
-  "186": {save:300, now:2999, expires:"Aug 30, 2026"},
-  "887": {save:75,  now:694,  expires:"Aug 30, 2026"},
-  "416": {save:50,  now:579,  expires:"Aug 30, 2026"},
-  "402": {save:125, now:414,  expires:"Aug 30, 2026"},
-  "302": {save:75,  now:344,  expires:"Aug 30, 2026"},
-  "351": {save:125, now:454,  expires:"Aug 30, 2026"}
+  "213": {save:100, now:1439, expires:"Sep 27, 2026"},
+  "796": {save:100, now:899,  expires:"Sep 27, 2026"},
+  "57A": {save:100, now:1219, expires:"Sep 27, 2026"},
+  "612": {save:75,  now:1414, expires:"Sep 27, 2026"},
+  "227": {save:200, now:3099, expires:"Sep 27, 2026"},
+  "186": {save:300, now:2999, expires:"Sep 27, 2026"},
+  "887": {save:75,  now:694,  expires:"Sep 27, 2026"},
+  "416": {save:50,  now:579,  expires:"Sep 27, 2026"},
+  "402": {save:125, now:414,  expires:"Sep 27, 2026"},
+  "302": {save:75,  now:344,  expires:"Sep 27, 2026"},
+  "351": {save:125, now:454,  expires:"Sep 27, 2026"}
 };
 
 var L = [
@@ -267,7 +269,7 @@ var L = [
 ["585","mapc","18-50mm F2.8 DC DN","Contemporary","zoom",18,50,659,549,"Sony E, L-Mount, Canon RF, Fuji X","55mm","STM",0,"Hood","wedding,event,landscape,travel","c021_18_50_28/",10.2],
 ["416","mapc","12mm F1.4 DC","Contemporary","prime",12,12,629,549,"Sony E, Canon RF, Fuji X","62mm","STM",0,"Hood, Pouch","world1 12mm F1.4 APS-C,aperture-ring,new,astro","c025_12_14/",7.9],
 ["406","mapc","15mm F1.4 DC","Contemporary","prime",15,15,579,499,"Sony E, Canon RF, Fuji X","58mm","STM",0,"Hood, Pouch","new,aperture-ring,astro","c026_15_14/",7.8],
-["402","mapc","16mm F1.4 DC DN","Contemporary","prime",16,16,539,469,"Sony E, MFT, Canon M, L-Mount, Canon RF, Nikon Z","67mm","STM",0,"Hood","astro","c017_16_14/",14.6],
+["402","mapc","16mm F1.4 DC DN","Contemporary","prime",16,16,539,469,"Sony E, MFT, Canon M, L-Mount, Canon RF, Fuji X, Nikon Z","67mm","STM",0,"Hood","astro","c017_16_14/",14.6],
 ["348","mapc","23mm F1.4 DC DN","Contemporary","prime",23,23,659,549,"Sony E, L-Mount, Canon RF, Fuji X","52mm","STM",0,"Hood","astro","c023_23_14/",12.0],
 ["302","mapc","30mm F1.4 DC DN","Contemporary","prime",30,30,419,349,"Sony E, MFT, Canon M, L-Mount, Canon RF, Fuji X, Nikon Z","52mm","STM",0,"Hood","","c016_30_14/",9.9],
 ["351","mapc","56mm F1.4 DC DN","Contemporary","prime",56,56,579,479,"Sony E, MFT, Canon M, L-Mount, Canon RF, Fuji X, Nikon Z","55mm","STM",0,"Hood","portrait tele","c018_56_14/",10.1],
@@ -276,10 +278,9 @@ var L = [
 ["730","dff","60-600mm F4.5-6.3 DG OS HSM","Sports","zoom",60,600,2199,1869,"Sigma","105mm","HSM",1,"Perfect Hood, Case","OS,10x zoom,sports,wildlife","s018_60_600_45_63/",87.3],
 ["590","dff","70-200mm F2.8 DG OS HSM","Sports","zoom",70,200,1649,1379,"Canon EF","82mm","HSM",1,"Perfect Hood, Case","OS,wedding,portrait,sports,wildlife","s016_70_200_28/",58.7],
 ["401","dff","24mm F1.4 DG HSM","Art","prime",24,24,939,789,"L-Mount","77mm","HSM",0,"Hood, Case","astro,wedding","a015_24_14/",23.5],
-["441","dff","28mm F1.4 DG HSM","Art","prime",28,28,879,809,"Nikon F, Sony E, L-Mount","77mm","HSM",0,"Hood, Case","astro,wedding","a019_28_14/",26.8],
+["441","dff","28mm F1.4 DG HSM","Art","prime",28,28,879,809,"L-Mount","77mm","HSM",0,"Hood, Case","astro,wedding","a019_28_14/",26.8],
 ["340","dff","35mm F1.4 DG HSM","Art","prime",35,35,989,869,"Nikon F, Pentax, Sigma","67mm","HSM",0,"Perfect Hood, Case","astro,wedding,portrait","a013_35_14/",23.5],
 ["311","dff","50mm F1.4 DG HSM","Art","prime",50,50,1049,869,"Nikon F, L-Mount","77mm","HSM",0,"Perfect Hood, Case","wedding,portrait","a014_50_14/",29.6],
-["321","dff","85mm F1.4 DG HSM","Art","prime",85,85,1319,1099,"Nikon F","86mm","HSM",0,"Perfect Hood, Case","wedding,portrait","a016_85_14/",39.9],
 ["185","dff","500mm F4.0 DG OS HSM","Sports","prime",500,500,6599,5829,"Sigma","Rear","HSM",1,"Perfect Hood, Case","OS,super-tele,sports,wildlife","s013_500_4/",233.5],
 ["301","dapc","30mm F1.4 DC HSM","Art","prime",30,30,549,489,"Nikon F","62mm","HSM",0,"Perfect Hood, Case","","a013_30_14/",17.6],
 ["210","dapc","18-35mm F1.8 DC HSM","Art","zoom",18,35,879,749,"Nikon F","72mm","HSM",0,"Perfect Hood, Case","world1 F1.8 zoom,astro","a013_18_35_18/",28.6],
@@ -295,7 +296,7 @@ var L = [
 ["825","acc","1.4x Teleconverter TC-1411","Accessory","teleconverter",0,0,449,369,"L-Mount","--","--",0,"","1.4x L-mount SGV lenses","tc-1411/",0],
 ["826","acc","2.0x Teleconverter TC-2011","Accessory","teleconverter",0,0,479,399,"L-Mount","--","--",0,"","2.0x L-mount SGV lenses","tc-2011/",0],
 ["879","acc","1.4x Teleconverter TC-1401","Accessory","teleconverter",0,0,389,319,"Canon EF, Nikon F, Sigma","--","--",0,"Case","1.4x DSLR SGV lenses","tc-1401/",0],
-["870","acc","2.0x Teleconverter TC-2001","Accessory","teleconverter",0,0,449,389,"Canon EF, Nikon F, Sigma","--","--",0,"Case","2.0x DSLR SGV lenses","tc-2001/",0]
+["870","acc","2.0x Teleconverter TC-2001","Accessory","teleconverter",0,0,449,389,"Canon EF, Sigma","--","--",0,"Case","2.0x DSLR SGV lenses","tc-2001/",0]
 ];
 
 var CAT_ORDER = ["mff","mis","mapc","dff","dapc","cam","acc"];
